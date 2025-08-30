@@ -1,0 +1,25 @@
+import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+import Home from './pages/Home/index.jsx'
+import NotFound from './pages/NotFound'
+
+import Staircase from './components/Staircase.jsx'
+
+function App() {
+	return (
+		<>
+			<BrowserRouter>
+				<Staircase />
+				<div className="font-primary text-base">
+					<Routes>
+						<Route path="/" element={<Home />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</div>
+			</BrowserRouter>
+		</>
+	)
+}
+
+export default App
