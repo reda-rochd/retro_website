@@ -4,13 +4,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home/index.jsx'
 import NotFound from './pages/NotFound'
 
-import Staircase from './components/Staircase.jsx'
-
 function App() {
 	return (
 		<>
 			<BrowserRouter>
-				<Staircase />
 				<div className="font-primary text-base">
 					<Routes>
 						<Route path="/" element={<Home />} />

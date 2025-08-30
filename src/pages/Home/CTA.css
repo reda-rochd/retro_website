@@ -1,0 +1,24 @@
+.neon-btn {
+	position: relative;
+	padding: 5px 50px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 0 5px var(--color-accent), 0 0 5px var(--color-accent), inset 0 0 5px var(--color-accent), inset 0 0 5px var(--color-accent);
+	text-shadow: 0 0 10px var(--color-secondary);
+	transition: all 0.3s ease-in;
+}
+
+.neon-btn::before {
+	content: '';
+	position: absolute;
+	top: 0px; bottom: 0px; left: -12%;
+	background: radial-gradient(circle, var(--color-accent) 0%, #0000 110%);
+	width: 125%;
+	z-index: -1;
+	filter: blur(15px);
+	opacity: .4;
+}
+
+.neon-btn:hover {
+	transition: all 0.3s ease-in;
+}
