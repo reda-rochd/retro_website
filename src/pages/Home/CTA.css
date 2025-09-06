@@ -2,9 +2,11 @@
 	position: relative;
 	padding: 5px 50px;
 	border: 1px solid #ccc;
-	border-radius: 5px;
-	box-shadow: 0 0 5px var(--color-accent), 0 0 5px var(--color-accent), inset 0 0 5px var(--color-accent), inset 0 0 5px var(--color-accent);
-	text-shadow: 0 0 10px var(--color-secondary);
+	border-radius: 5% / 100%;
+	box-shadow:
+		0 0 5px var(--color-accent-flamingo-queen),
+		inset 0 0 5px var(--color-accent-flamingo-queen);
+	/* text-shadow: 0 0 10px var(--color-accent-cerise-pink); */
 	transition: all 0.3s ease-in;
 }
 
@@ -12,11 +14,11 @@
 	content: '';
 	position: absolute;
 	top: 0px; bottom: 0px; left: -12%;
-	background: radial-gradient(circle, var(--color-accent) 0%, #0000 110%);
+	background: radial-gradient(circle, var(--color-accent-flamingo-queen) 0%, #0000 110%);
 	width: 125%;
 	z-index: -1;
 	filter: blur(15px);
-	opacity: .4;
+	opacity: .3;
 }
 
 .neon-btn:hover {

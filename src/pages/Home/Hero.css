@@ -1,16 +1,14 @@
 .headline {
-	color: var(--color-secondary);
+	color: var(--color-accent-cerise-pink);
 	text-shadow:
-		0 0 10px var(--color-secondary),
-		0 0 80px var(--color-secondary),
-		0 0 40px rgba(236, 64, 127, 0.5);
+		0 0 30px color-mix(in srgb, var(--color-accent-cerise-pink) 40%, transparent),
+		0 0 80px var(--color-accent-cerise-pink);
 	transition: all 0.6s ease-out;
 }
 .headline:hover {
 	text-shadow:
-		0 0 10px var(--color-secondary),
-		0 0 80px var(--color-secondary),
-		0 0 40px rgba(255, 255, 255, 0.3);
+		0 0 50px color-mix(in srgb, var(--color-accent-cerise-pink) 70%, transparent),
+		0 0 80px var(--color-accent-cerise-pink);
 	transition: all 0.3s ease-in;
 }
 

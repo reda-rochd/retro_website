@@ -1,0 +1,147 @@
+/* body{ */
+/* 	overflow-x: hidden; */
+/* } */
+
+.section.neon-section {
+	border-radius: var(--radius);
+}
+
+.neon-section {
+	--hue1: 255;
+	--hue2: 222;
+	--radius: 22px;
+	--border: 1px;
+	--border-color: hsl(var(--hue2), 12%, 20%);
+
+	contain: layout;
+	border-radius: var(--radius);
+	/* border: var(--border) solid var(--border-color); */
+	padding: 1em;
+	position: relative;
+	/* background: */
+	/* 	linear-gradient(235deg, hsl(var(--hue1) 50% 10% / 0.8), transparent 33%), */
+	/* 	linear-gradient(45deg, hsl(var(--hue2) 50% 10% / 0.8), transparent 33%), */
+	/* 	linear-gradient(hsl(220deg 25% 4.8% / 0.66)); */
+	/* backdrop-filter: blur(12px); */
+	box-shadow:
+		hsl(var(--hue2) 50% 2%) 0px 10px 16px -8px,
+		hsl(var(--hue2) 50% 4%) 0px 20px 36px -14px;
+}
+
+.neon-section > span {
+	pointer-events: none;
+	position: absolute;
+	display: block;
+	width: 65%;
+	aspect-ratio: 1;
+}
+
+.neon-section > .top-right {
+	--hue: var(--hue1);
+	--conic-angle: -45deg;
+	--inset-y: calc(var(--border) * -1);
+	--inset-x: calc(var(--border) * -1);
+	top: var(--inset-y);
+	right: var(--inset-x);
+}
+
+.neon-section > .bottom-left {
+	--hue: var(--hue2);
+	--conic-angle: 135deg;
+	--inset-y: calc(var(--border) * -1);
+	--inset-x: calc(var(--border) * -1);
+	bottom: var(--inset-y);
+	left: var(--inset-x);
+}
+
+.neon-section > .shine {
+	border: 1px solid transparent;
+	border-top-right-radius: inherit;
+	border-bottom-left-radius: inherit;
+	background: conic-gradient(
+		from var(--conic-angle),
+		transparent 12%, hsl(var(--hue), 80%, 60%), transparent 50%
+	) border-box;
+	mask:
+		linear-gradient(transparent, transparent),
+		linear-gradient(black, black);
+	mask-clip: padding-box, border-box;
+	mask-composite: subtract;
+}
+
+.neon-section > .shine::before,
+.neon-section > .shine::after {
+	content: "";
+	position: absolute;
+	inset: -2px;
+	mask: none;
+}
+
+.neon-section > .shine::after {
+	background: conic-gradient(
+
+		from var(--conic-angle),
+		transparent 17%, hsl(var(--hue), 80%, 85%), transparent 33%
+	);
+}
+
+.neon-section > .glow {
+	inset: calc(var(--radius) * -2);
+	border: calc(var(--radius) * 1.25) solid transparent;
+	border-top-right-radius: calc(var(--radius) * 2.5);
+	border-bottom-left-radius: calc(var(--radius) * 2.5);
+	filter: blur(12px) saturate(1.25) brightness(0.5);
+	mix-blend-mode: plus-lighter;
+	mask: url('https://assets.codepen.io/13471/noise-base.png');
+	mask-mode: luminance;
+	mask-size: 9%;
+}
+
+.neon-section > .glow.top-right { inset: auto; top: calc(var(--radius) * -2); right: calc(var(--radius) * -2); }
+.neon-section > .glow.bottom-left { inset: auto; bottom: calc(var(--radius) * -2); left: calc(var(--radius) * -2); }
+
+
+.neon-section > .glow::before,
+.neon-section > .glow::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border: inherit;
+	border-radius: inherit;
+	background: conic-gradient(
+		from var(--conic-angle),
+		transparent 0%, hsl(var(--hue), 95%, 60%), transparent 50%
+	) border-box;
+	mask:
+		linear-gradient(transparent, transparent),
+		linear-gradient(black, black);
+	mask-clip: padding-box, border-box;
+	mask-composite: subtract;
+	filter: saturate(2) brightness(1);
+}
+
+.neon-section > .glow::after {
+	--start: 15%;
+	--end: 35%;
+	border-width: calc(var(--radius) * 1.75);
+	border-radius: calc(var(--radius) * 2.75);
+	inset: calc(var(--radius) * -0.25);
+	background: conic-gradient(
+		from var(--conic-angle),
+		transparent var(--start), hsl(var(--hue), 100%, 70%), transparent var(--end)
+	) border-box;
+	opacity: 0.75;
+}
+
+.neon-section > .glow-bright {
+	border-width: 5px;
+	border-radius: calc(var(--radius) + 2px);
+	filter: blur(2px) brightness(0.66);
+}
+.neon-section > .glow-bright.top-right { inset: auto; top: -7px; right: -7px; }
+.neon-section > .glow-bright.bottom-left { inset: auto; bottom: -7px; left: -7px; }
+
+
+.neon-section > .glow-bright::after {
+	content: none;
+}
