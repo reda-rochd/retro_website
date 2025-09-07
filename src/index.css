@@ -3,11 +3,14 @@
 @import 'tailwindcss';
 
 @theme {
+	--radius: 22px;
+	--content-width: min(100%, 700px);
 	--font-primary: 'Tilt Neon', cursive;
 	--color-primary: #070111;
 	--color-secondary: #1b1e28; 
 	--color-accent-flamingo-queen: #cc30ff;
 	--color-accent-cerise-pink: #ec407f;
+	--color-accent-cyan: #ec407f;
 }
 
 html {
@@ -22,14 +25,15 @@ body {
 	min-height: 100vh;
 	background: radial-gradient(circle at center, transparent 70%, rgba(0,0,0,0.4) 100%);
 	padding: 1px 0;
+	color: white;
 }
 
 .section {
 	background-color: var(--color-primary);
-	width: min(100%, 700px);
+	width: var(--content-width);
 	padding: 1rem 2rem;
 	margin: clamp(1rem, 5%, 3rem) auto;
-	border-radius: .25rem;
+	border-radius: var(--radius);
 	position: relative;
 	color: #eee;
 }
@@ -51,6 +55,39 @@ body {
 
 .gradient-text {
 	background: linear-gradient(90deg, var(--color-accent-flamingo-queen), var(--color-accent-cerise-pink));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	color: transparent;
+}
+
+@layer utilities {
+}
+
+.neon-btn {
+	position: relative;
+	padding: 5px 50px;
+	/* border: 1px solid #ccc; */
+	/* border-radius: 5% / 100%; */
+	cursor: pointer;
+	outline: none;
+	transition: all 0.3s ease-in .1s;
+}
+
+.neon-btn:hover::before {
+	background: radial-gradient(circle, var(--color-accent-cyan) 0%, #0000 110%);
+	opacity: 0.5;
+}
+
+.neon-btn::before {
+	content: '';
+	position: absolute;
+	top: 0px; bottom: 0px; left: -12%;
+	width: 125%;
+	z-index: -1;
+	filter: blur(15px);
+	opacity: .3;
+	transition: all 0.3s ease-in .1s;
+	background: radial-gradient(circle, #0000 0%, #0000 110%);
+}
+.neon-btn.active::before {
+	background: radial-gradient(circle, var(--color-accent-cyan) 0%, #0000 110%);
 }

@@ -1,4 +1,4 @@
-.neon-btn {
+.cta {
 	position: relative;
 	padding: 5px 50px;
 	border: 1px solid #ccc;
@@ -10,7 +10,7 @@
 	transition: all 0.3s ease-in;
 }
 
-.neon-btn::before {
+.cta::before {
 	content: '';
 	position: absolute;
 	top: 0px; bottom: 0px; left: -12%;
@@ -21,6 +21,6 @@
 	opacity: .3;
 }
 
-.neon-btn:hover {
+.cta:hover {
 	transition: all 0.3s ease-in;
 }

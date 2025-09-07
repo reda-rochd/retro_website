@@ -9,20 +9,16 @@
 .neon-section {
 	--hue1: 255;
 	--hue2: 222;
-	--radius: 22px;
 	--border: 1px;
 	--border-color: hsl(var(--hue2), 12%, 20%);
 
 	contain: layout;
-	border-radius: var(--radius);
-	/* border: var(--border) solid var(--border-color); */
 	padding: 1em;
 	position: relative;
-	/* background: */
-	/* 	linear-gradient(235deg, hsl(var(--hue1) 50% 10% / 0.8), transparent 33%), */
-	/* 	linear-gradient(45deg, hsl(var(--hue2) 50% 10% / 0.8), transparent 33%), */
-	/* 	linear-gradient(hsl(220deg 25% 4.8% / 0.66)); */
-	/* backdrop-filter: blur(12px); */
+	background:
+		linear-gradient(235deg, hsl(var(--hue1) 50% 10% / 0.8), transparent 33%),
+		linear-gradient(45deg, hsl(var(--hue2) 50% 10% / 0.8), transparent 33%)
+		;
 	box-shadow:
 		hsl(var(--hue2) 50% 2%) 0px 10px 16px -8px,
 		hsl(var(--hue2) 50% 4%) 0px 20px 36px -14px;
@@ -39,19 +35,15 @@
 .neon-section > .top-right {
 	--hue: var(--hue1);
 	--conic-angle: -45deg;
-	--inset-y: calc(var(--border) * -1);
-	--inset-x: calc(var(--border) * -1);
-	top: var(--inset-y);
-	right: var(--inset-x);
+	top: 0;
+	right: 0;
 }
 
 .neon-section > .bottom-left {
 	--hue: var(--hue2);
 	--conic-angle: 135deg;
-	--inset-y: calc(var(--border) * -1);
-	--inset-x: calc(var(--border) * -1);
-	bottom: var(--inset-y);
-	left: var(--inset-x);
+	bottom: 0;
+	left: 0;
 }
 
 .neon-section > .shine {
@@ -97,8 +89,17 @@
 	mask-size: 9%;
 }
 
-.neon-section > .glow.top-right { inset: auto; top: calc(var(--radius) * -2); right: calc(var(--radius) * -2); }
-.neon-section > .glow.bottom-left { inset: auto; bottom: calc(var(--radius) * -2); left: calc(var(--radius) * -2); }
+.neon-section > .glow.top-right {
+	inset: auto;
+	top: calc(var(--radius) * -2);
+	right: calc(var(--radius) * -2);
+}
+
+.neon-section > .glow.bottom-left {
+	inset: auto;
+	bottom: calc(var(--radius) * -2);
+	left: calc(var(--radius) * -2);
+}
 
 
 .neon-section > .glow::before,

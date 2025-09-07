@@ -2,7 +2,7 @@ import './Section.css'
 
 export default function Section({ children }) {
 	return (
-		<section className="section neon-section">
+		<section className="section neon-section min-h-[500px]">
 			<span class="shine top-right"></span>
 			<span class="glow top-right"></span>
 			<span class="glow glow-bright top-right"></span>
