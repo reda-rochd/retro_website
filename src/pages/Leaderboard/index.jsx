@@ -8,17 +8,17 @@ export default function Leaderboard() {
 		"teams": [
 			{
 				name: "Team A",
-				avatar: "https://avatars.githubusercontent.com/u/542148?s=200&v=4",
+				avatar: "https://avatars.githubusercontent.com/u/541148?s=200&v=4",
 				points: 120,
 			},
 			{
 				name: "Team C",
-				avatar: "https://avatars.githubusercontent.com/u/542149?s=200&v=4",
+				avatar: "https://avatars.githubusercontent.com/u/541150?s=200&v=4",
 				points: 110,
 			},
 			{
 				name: "Team B",
-				avatar: "https://avatars.githubusercontent.com/u/542150?s=200&v=4",
+				avatar: "https://avatars.githubusercontent.com/u/541151?s=200&v=4",
 				points: 95,
 			},
 		],
@@ -35,7 +35,7 @@ export default function Leaderboard() {
 			},
 			{
 				name: "Charlie",
-				avatar: "https://avatars.githubusercontent.com/u/542153?s=200&v=4",
+				avatar: "https://avatars.githubusercontent.com/u/541153?s=200&v=4",
 				points: 50,
 			}
 		]
@@ -43,8 +43,8 @@ export default function Leaderboard() {
 
 	return (
 		<Section>
-			<h1 className="text-4xl font-bold mb-8 text-center">Leaderboard</h1>
-			<div className="flex justify-center mb-6 space-x-4">
+			{/* <h1 className="text-4xl font-bold mb-8 text-center">Leaderboard</h1> */}
+			<div className="flex justify-center mt-6 mb-9 space-x-6">
 				<button className={`${activeTab == "teams" ? "active" : ""} neon-btn`} onClick={() => setActiveTab("teams")}>Teams</button>
 				<button className={`${activeTab == "teams" ? "" : "active"} neon-btn`} onClick={() => setActiveTab("individuals")}>Individuals</button>
 			</div>

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import Home from './pages/Home/index.jsx'
 import Leaderboard from './pages/Leaderboard/index.jsx'
+import Dashboard from './pages/Dashboard/index.jsx'
 import NotFound from './pages/NotFound'
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
 					<Routes>
 						<Route path="/" element={<Home />} />
 						<Route path="/leaderboard" element={<Leaderboard />} />
+						<Route path="/dashboard" element={<Dashboard />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</div>

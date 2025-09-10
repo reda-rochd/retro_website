@@ -16,6 +16,12 @@
 .blinker > span:nth-child(2) { animation: blinker 9s linear infinite; }
 .blinker > span:nth-child(3) { animation: blinker 7s linear infinite; }
 
+.hero > div > a {
+	text-shadow:
+		0 0 20px color-mix(in srgb, var(--color-accent-cerise-pink) 40%, transparent),
+		0 0 40px var(--color-accent-cerise-pink);
+}
+
 @keyframes blinker {
   11% { opacity: 1; }
   12% { opacity: .5; }

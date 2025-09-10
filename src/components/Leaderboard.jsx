@@ -2,9 +2,9 @@ import BlobShape from './BlobShape.jsx';
 
 export default function Leaderboard({leaders}) {
 	return (
-<div>
+<div className="flex flex-col gap-6">
 	{leaders.map((leader, index) => (
-		<div key={index} className="flex justify-between items-center my-6 bg-white/5 rounded-lg px-4">
+		<div key={index} className="flex justify-between items-center bg-white/5 rounded-lg px-4">
 			<div className="flex items-center gap-4">
 				<span>#{index + 1}</span>
 				<div className="h-10 flex items-center">

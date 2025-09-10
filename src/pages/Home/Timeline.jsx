@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import Section from "../../components/Section.jsx";
 import './Timeline.css';
 
 export default function Timeline({ events = [] }) {
@@ -10,9 +11,9 @@ export default function Timeline({ events = [] }) {
 		const svg = container.querySelector('svg');
 		const basePath = svg.querySelector('#base');
 		const highlightPath = svg.querySelector('#highlight');
-	const styles = getComputedStyle(container);
-	const baseline = parseFloat(styles.getPropertyValue('--timeline-baseline'));
-	const amplitude = parseFloat(styles.getPropertyValue('--timeline-amplitude'));
+		const styles = getComputedStyle(container);
+		// const baseline = parseFloat(styles.getPropertyValue('--timeline-baseline'));
+		const amplitude = parseFloat(styles.getPropertyValue('--timeline-amplitude'));
 		if (items.length === 0) return;
 
 		const update = () => {
@@ -25,8 +26,7 @@ export default function Timeline({ events = [] }) {
 				const top = parseFloat(cs.top) || 0;
 				const w = parseFloat(cs.width) || 0;
 				const h = parseFloat(cs.height) || 0;
-				// const x = ((itemRect.left - containerRect.left) + left + w / 2) + ( i % 2 ? baseline : 0);
-				const x = ((itemRect.left - containerRect.left) + left + w / 2) + (i % 2 ?amplitude : -amplitude);
+				const x = ((itemRect.left - containerRect.left) + left + w / 2) + (i % 2 ? amplitude : -amplitude);
 				const y = (itemRect.top - containerRect.top) + top + h / 2;
 				return [x, y];
 			});
@@ -72,7 +72,7 @@ export default function Timeline({ events = [] }) {
 	}, [events.length]);
 
 	return (
-		<section className="timeline section" ref={containerRef}>
+		<Section className="timeline" ref={containerRef}>
 			<h2>Our Journey</h2>
 			<svg xmlns="http://www.w3.org/2000/svg">
 				<path id="base" />
@@ -86,7 +86,7 @@ export default function Timeline({ events = [] }) {
 					<span className="circle" aria-hidden="true"></span>
 				</div>
 			))}
-		</section>
+		</Section>
 	);
 }
 

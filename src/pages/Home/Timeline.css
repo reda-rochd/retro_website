@@ -1,13 +1,17 @@
 .timeline {
-	--timeline-baseline: 20px;
-	--timeline-amplitude: 20px;
-	--timeline-padding-left: calc(var(--timeline-baseline) * 2);
+	--timeline-baseline: 30px;
+	--timeline-amplitude: 30px;
+	--timeline-padding-left: calc(var(--timeline-amplitude) * 2);
 }
 
 .timeline-item {
 	position: relative;
-	margin: 2rem 0;
+	margin-left: var(--timeline-amplitude);
 	padding-left: var(--timeline-padding-left);
+}
+
+.timeline-item:not(:last-child) {
+	margin-bottom: 2rem;
 }
 
 .timeline-item time
@@ -25,7 +29,6 @@
 	font-size: 0.9em;
 }
 
-
 .timeline-item::before {
 	--size: 14px;
 	content: "";
@@ -42,8 +45,8 @@
 }
 
 .timeline-item.active::before {
-	border-color: var(--color-accent-cerise-pink);
-	box-shadow: 0 0 12px var(--color-accent-cerise-pink), 0 0 24px var(--color-accent-cerise-pink), inset 0 0 6px var(--color-accent-cerise-pink);
+	border-color: var(--color-accent-flamingo-queen);
+	box-shadow: 0 0 12px var(--color-accent-flamingo-queen), 0 0 24px var(--color-accent-flamingo-queen), inset 0 0 6px var(--color-accent-flamingo-queen);
 }
 
 .timeline svg {
@@ -64,10 +67,12 @@
 }
 
 .timeline .highlight {
-	stroke: var(--color-accent-cerise-pink);
+	stroke: var(--color-accent-flamingo-queen);
 	stroke-width: 3;
 	stroke-linecap: round;
-	filter: drop-shadow(0 0 6px var(--color-accent-cerise-pink));
+	filter:
+	  drop-shadow(0 0 4px var(--color-accent-cerise-pink))
+	  drop-shadow(0 0 8px var(--color-accent-flamingo-queen));
 	stroke-dasharray: var(--path-length);
 	stroke-dashoffset: var(--path-length);
 	transition: stroke-dashoffset 0.1s linear;

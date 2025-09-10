@@ -36,7 +36,7 @@
 	--hue: var(--hue1);
 	--conic-angle: -45deg;
 	top: 0;
-	right: 0;
+	right: 0px;
 }
 
 .neon-section > .bottom-left {

@@ -1,8 +1,9 @@
 import BlobShape from "../../components/BlobShape.jsx";
+import Section from "../../components/Section.jsx";
 
 export default function Organizers({ organizers }) {
 	return (
-		<section className="section">
+		<Section className="section">
 			<h2>Our organizers</h2>
 			<div className="flex flex-wrap justify-center gap-x-12 gap-y-8 pb-4">
 				{organizers.map((organizer, index) => (
@@ -19,7 +20,7 @@ export default function Organizers({ organizers }) {
 					</div>
 				))}
 			</div>
-		</section>
+		</Section>
 	)
 }
 
