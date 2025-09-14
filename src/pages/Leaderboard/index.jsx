@@ -44,9 +44,9 @@ export default function Leaderboard() {
 	return (
 		<Section>
 			{/* <h1 className="text-4xl font-bold mb-8 text-center">Leaderboard</h1> */}
-			<div className="flex justify-center mt-6 mb-9 space-x-6">
-				<button className={`${activeTab == "teams" ? "active" : ""} neon-btn`} onClick={() => setActiveTab("teams")}>Teams</button>
-				<button className={`${activeTab == "teams" ? "" : "active"} neon-btn`} onClick={() => setActiveTab("individuals")}>Individuals</button>
+			<div className="neon-tab-container">
+				<button className={`${activeTab == "teams" ? "active" : ""} neon-tab`} onClick={() => setActiveTab("teams")}>Teams</button>
+				<button className={`${activeTab == "teams" ? "" : "active"} neon-tab`} onClick={() => setActiveTab("individuals")}>Individuals</button>
 			</div>
 			<Leaderboard_component leaders={data[activeTab]} />
 		</Section>

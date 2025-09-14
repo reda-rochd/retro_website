@@ -13,6 +13,35 @@
 	--color-accent-cyan: #00e5ff;
 }
 
+@layer utilities {
+	.neon-tab-container {
+		@apply flex justify-center my-2 mb-4 space-x-4;
+	}
+
+	.neon-tab {
+		@apply relative px-4 py-2 border border-transparent rounded-[var(--radius)] cursor-pointer outline-none transition-all duration-300 ease-in;
+	}
+
+	.neon-tab::before {
+		content: '';
+		@apply absolute top-1/4 left-1/8 w-3/4 h-1/2 filter blur-[12px] opacity-30 transition-all duration-300 delay-100 ease-in;
+		background: radial-gradient(circle, #0000 0%, #0000 110%);
+	}
+
+	.neon-tab.active {
+		@apply border-[var(--color-accent-flamingo-queen)];
+	}
+
+	.neon-tab:hover::before {
+		background: radial-gradient(circle, var(--color-accent-cerise-pink) 0%, #0000 110%);
+		opacity: 0.5;
+	}
+
+	.neon-tab.active::before {
+		background: radial-gradient(circle, var(--color-accent-cerise-pink) 0%, #0000 110%);
+	}
+}
+
 html {
 	--bw-s: 24px;
 	--bw-g:conic-gradient(at 95% 45%,#0000 75%,#1b1e28 0);
@@ -31,16 +60,14 @@ body {
 .section {
 	background-color: var(--color-primary);
 	width: var(--content-width);
-	padding: 0 2rem;
+	padding: 2rem;
 	margin: clamp(1rem, 5%, 3rem) auto;
 	border-radius: var(--radius);
 	position: relative;
 	color: #eee;
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
-	padding-top: 1.5rem;
-	padding-bottom: 2.5rem;
+	gap: .75rem;
 }
 
 .section h2 {
@@ -61,46 +88,4 @@ body {
 	background: linear-gradient(90deg, var(--color-accent-flamingo-queen), var(--color-accent-cerise-pink));
 	background-clip: text;
 	color: transparent;
-}
-
-@layer utilities {
-}
-
-.neon-btn {
-	position: relative;
-	padding: 5px 50px;
-	border: 1px solid #ccc;
-	border-radius: var(--radius);
-	cursor: pointer;
-	outline: none;
-	transition: all 0.3s ease-in .1s;
-}
-
-.neon-btn:hover::before {
-	background: radial-gradient(circle, var(--color-accent-cerise-pink) 0%, #0000 110%);
-	opacity: 0.5;
-}
-
-.neon-btn::before {
-	content: '';
-	position: absolute;
-	top: 25%;
-	left: 12.5%;
-	right: 0;
-	bottom: 0;
-	width: 75%;
-	height: 50%;
-	z-index: -1;
-	filter: blur(12px);
-	opacity: .3;
-	transition: all 0.3s ease-in .1s;
-	background: radial-gradient(circle, #0000 0%, #0000 110%);
-}
-
-.neon-btn.active {
-	/* border-color: var(--color-accent-cerise-pink); */
-}
-
-.neon-btn.active::before {
-	background: radial-gradient(circle, var(--color-accent-cerise-pink) 0%, #0000 110%);
 }

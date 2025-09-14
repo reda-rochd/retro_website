@@ -81,7 +81,7 @@ export default function Timeline({ events = [] }) {
 			{events.map((label, idx) => (
 				<div key={idx} className="timeline-item">
 					<time>{new Date(label.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
-					<h3>{label.title}</h3>
+					<h3>{label.name}</h3>
 					<p>{label.description}</p>
 					<span className="circle" aria-hidden="true"></span>
 				</div>

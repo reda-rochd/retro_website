@@ -11,31 +11,31 @@ export default function Home() {
 			<Timeline events={[
 				{
 					date: '2022-02-14',
-					title: 'A special event',
+					name: 'A special event',
 					description: 'The path stroke has thickness. If the path starts at y=0, half of the stroke is actually outside the SVG viewport. With even a 1px padding, the first control point moves down enough so the whole stroke is inside, no clipping.',
 					avatar: 'https://thumbs.dreamstime.com/z/stylish-abstract-modern-background-blue-white-red-watercolor-ink-water-powerful-explosion-colors-cool-trending-171424933.jpg?ct=jpeg'
 				},
 				{
 					date: '2023-02-14',
-					title: 'Where events can have',
+					name: 'Where events can have',
 					description: 'The path stroke has thickness. If the path starts at y=0, half of the stroke is actually outside the SVG viewport. With even a 1px padding, the first control point moves down enough so the whole stroke is inside, no clipping.',
 					avatar: 'https://thumbs.dreamstime.com/z/stylish-abstract-modern-background-blue-white-red-watercolor-ink-water-powerful-explosion-colors-cool-trending-171424933.jpg?ct=jpeg'
 				},
 				{
 					date: '2024-02-14',
-					title: 'A special event where events can have a very long title that might wrap onto multiple lines',
+					name: 'A special event where events can have a very long title that might wrap onto multiple lines',
 					description: 'The path stroke has thickness. If the path starts at y=0, half of the stroke is actually outside the SVG viewport. With even a 1px padding, the first control point moves down enough so the whole stroke is inside, no clipping.',
 					avatar: 'https://thumbs.dreamstime.com/z/stylish-abstract-modern-background-blue-white-red-watercolor-ink-water-powerful-explosion-colors-cool-trending-171424933.jpg?ct=jpeg'
 				},
 				{
 					date: '2025-02-14',
-					title: 'A special event where events can have a very long title that might wrap onto multiple lines',
+					name: 'A special event where events can have a very long title that might wrap onto multiple lines',
 					description: 'The path stroke has thickness. If the path starts at y=0, half of the stroke is actually outside the SVG viewport. With even a 1px padding, the first control point moves down enough so the whole stroke is inside, no clipping.',
 					avatar: 'https://thumbs.dreamstime.com/z/stylish-abstract-modern-background-blue-white-red-watercolor-ink-water-powerful-explosion-colors-cool-trending-171424933.jpg?ct=jpeg'
 				},
 				{
 					date: '2026-02-14',
-					title: 'A special event where events can have a very long title that might wrap onto multiple lines',
+					name: 'A special event where events can have a very long title that might wrap onto multiple lines',
 					description: 'The path stroke has thickness. If the path starts at y=0, half of the stroke is actually outside the SVG viewport. With even a 1px padding, the first control point moves down enough so the whole stroke is inside, no clipping.',
 					avatar: 'https://thumbs.dreamstime.com/z/stylish-abstract-modern-background-blue-white-red-watercolor-ink-water-powerful-explosion-colors-cool-trending-171424933.jpg?ct=jpeg'
 				},
