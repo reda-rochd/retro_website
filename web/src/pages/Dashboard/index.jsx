@@ -10,11 +10,11 @@ export default function Dashboard()
 	const [activeTab, setActiveTab] = useState(tabs[0]);
 
 	return (
-		<section className="section top-10 relative z-2">
-			<div className="flex absolute -top-10 left-1/2 -translate-x-1/2 rounded-t-[var(--radius)] overflow-hidden">
+		<section className="section top-12 relative z-2">
+			<div className="flex absolute -top-20 left-1/2 -translate-x-1/2 rounded-[var(--radius)] overflow-hidden">
 				{tabs.map(tab => (
 					<button
-						className={`cursor-pointer py-2 w-27 
+						className={`cursor-pointer py-5 w-30 
 							${activeTab === tab
 								? "bg-primary z-1"
 								: "bg-primary/55 text-white"}`}
