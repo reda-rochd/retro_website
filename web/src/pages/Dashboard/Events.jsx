@@ -35,14 +35,14 @@ function EventForm({ initialData = {}, onSave }) {
 				defaultValue={initialData.name || ""}
 				placeholder="Event Name"
 				required
-				className="w-full p-4 border border-gray-300 rounded"
+				className="w-full px-4 border-l border-gray-500"
 			/>
 			<input
 				type="date"
 				name="date"
-				defaultValue={initialData.date || ""}
+				defaultValue={initialData.date || Date.now()}
 				required
-				className="w-full p-4 border border-gray-300 rounded"
+				className="w-full px-4 border-l border-gray-500"
 			/>
 			<input
 				type="text"
@@ -50,13 +50,13 @@ function EventForm({ initialData = {}, onSave }) {
 				defaultValue={initialData.location || ""}
 				placeholder="Location"
 				required
-				className="w-full p-4 border border-gray-300 rounded"
+				className="w-full px-4 border-l border-gray-500"
 			/>
 			<textarea
 				name="description"
 				defaultValue={initialData.description || ""}
 				placeholder="Description"
-				className="w-full p-4 border border-gray-300 rounded"
+				className="w-full px-4 border-l border-gray-500"
 			></textarea>
 
 			<div className="flex gap-4 mt-2 items-center justify-between">
@@ -64,7 +64,7 @@ function EventForm({ initialData = {}, onSave }) {
 				<button
 					type="button"
 					onClick={handleAddGame}
-					className="px-4 py-2 bg-primary/10 rounded w-fit flex"
+					className="px-4 py-2 bg-primary/10 rounded w-fit flex cursor-pointer"
 				>
 					+ Add Game
 				</button>
@@ -78,7 +78,7 @@ function EventForm({ initialData = {}, onSave }) {
 						onChange={(e) => handleChangeGame(index, "name", e.target.value)}
 						placeholder="Game Name"
 						required
-						className="w-1/2 px-4 py-2 border border-gray-300 rounded"
+						className="w-1/2 px-4 border-l border-gray-500"
 					/>
 					<input
 						type="number"
@@ -86,19 +86,19 @@ function EventForm({ initialData = {}, onSave }) {
 						onChange={(e) => handleChangeGame(index, "score", Number(e.target.value))}
 						placeholder="Score"
 						required
-						className="w-1/2 px-4 py-2 border border-gray-300 rounded"
+						className="w-1/2 px-4 border-l border-gray-500"
 					/>
 					<button
 						type="button"
 						onClick={() => handleDeleteGame(index)}
-						className="px-4 py-2 bg-primary text-red-400 rounded"
+						className="px-4 py-2 bg-primary text-red-400 rounded cursor-pointer"
 					>
 						Delete
 					</button>
 				</div>
 			))}
 
-			<button type="submit" className="px-4 py-2 bg-primary text-white rounded">
+			<button type="submit" className="px-4 py-2 bg-primary text-white rounded cursor-pointer">
 				Save Event
 			</button>
 		</form>
@@ -164,36 +164,35 @@ export default function Events() {
 		<div>
 			<button
 				onClick={openAddForm}
-				className="cursor-pointer mb-7 px-10 m-auto py-2 bg-white text-primary rounded w-fit flex items-center justify-center gap-2"
+				className="cursor-pointer mb-7 px-4 py-2 bg-white text-primary rounded w-fit flex items-center justify-center gap-2"
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-					<path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-				</svg>
-				<span>Add New Event</span>
+				<span>+ Add New Event</span>
 			</button>
 
 			<div className="flex flex-col gap-8">
 				{events.map(event => (
-					<div key={event.id} className="border border-gray-300 rounded p-4">
+					<div key={event.id} className="border-l border-gray-300 pl-8 pb-4">
+						<div className="flex mb-2 gap-4 mx-auto w-fit">
 						<h2 className="text-xl font-bold">{event.name}</h2>
-						<p>Date: {event.date}</p>
-						<p>Location: {event.location}</p>
-						<p>Description: {event.description}</p>
-						<h3 className="mt-2">Games:</h3>
-						{event.games?.map((game, i) => (
-							<p className="ml-4" key={i}>
-								{game.name}: {game.score} pts
-							</p>
-						))}
-						<button
-							onClick={() => openEditForm(event)}
-							className="cursor-pointer mt-4 px-5 py-1 bg-white text-primary rounded flex items-center gap-2"
+						<button onClick={() => openEditForm(event)}
+							className="cursor-pointer px-2 text-white rounded"
 						>
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652l-1.688 1.687m-2.651-2.651L6.75 16.5a2.25 2.25 0 00-.562.975l-.621 2.485a.75.75 0 00.91.91l2.486-.621a2.25 2.25 0 00.975-.562L19.513 7.138m-2.651-2.651L19.5 7.125" />
 							</svg>
-							<span>Edit Event</span>
 						</button>
+						</div>
+						<p>Date: {event.date}</p>
+						<p>Location: {event.location}</p>
+						<p>Description: {event.description}</p>
+						<h3 className="mt-2">Games:</h3>
+						<ul>
+						{event.games?.map((game, i) => (
+							<li className="ml-4 list-disc" key={i}>
+								{game.name}: {game.score} pts
+							</li>
+						))}
+						</ul>
 					</div>
 				))}
 			</div>
@@ -203,11 +202,9 @@ export default function Events() {
 					<EventForm
 						initialData={editingEvent || {}}
 						onSave={handleSave}
-						onCancel={() => setModalOpen(false)}
 					/>
 				</Modal>
 			)}
 		</div>
 	)
 }
-

@@ -2,11 +2,10 @@ import {useState} from "react";
 import QRInput from "../../components/QRInput.jsx";
 import Events from "./Events.jsx";
 import Teams from "./Teams.jsx";
-import Leaders from "./Leaders.jsx";
 
 export default function Dashboard()
 {
-	const tabs = ["Events", "Teams", "Leaders"];
+	const tabs = ["Events", "Teams"];
 	const [activeTab, setActiveTab] = useState(tabs[0]);
 
 	return (
@@ -25,7 +24,6 @@ export default function Dashboard()
 			</div>
 			{ activeTab === "Events" && <Events /> }
 			{ activeTab === "Teams" && <Teams /> }
-			{ activeTab === "Leaders" && <Leaders /> }
 		</section>
 	)
 }
