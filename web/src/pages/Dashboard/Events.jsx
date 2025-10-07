@@ -3,7 +3,7 @@ import Modal from "../../components/Modal.jsx"
 import Form from "./Form.jsx"
 
 
-function EventForm({ initialData = {}, onSave }) {
+function EventForm({ initialData = {}, onSave, onDelete }) {
 	const [games, setGames] = useState(initialData.games || []);
 
 	const handleAddGame = () => {
@@ -28,7 +28,7 @@ function EventForm({ initialData = {}, onSave }) {
 
 	return (
 		<form onSubmit={handleSubmit} className="flex flex-col gap-4">
-			<h2>{initialData.id ? "Edit Event" : "Add New Event"}</h2>
+			<h2>{initialData._id ? "Edit Event" : "Add New Event"}</h2>
 			<input
 				type="text"
 				name="name"
@@ -40,7 +40,11 @@ function EventForm({ initialData = {}, onSave }) {
 			<input
 				type="date"
 				name="date"
-				defaultValue={initialData.date || Date.now()}
+				defaultValue={
+					initialData.date
+						? new Date(initialData.date).toISOString().split('T')[0]
+						: new Date().toISOString().split('T')[0]
+				}
 				required
 				className="w-full px-4 border-l border-gray-500"
 			/>
@@ -98,9 +102,15 @@ function EventForm({ initialData = {}, onSave }) {
 				</div>
 			))}
 
-			<button type="submit" className="px-4 py-2 bg-primary text-white rounded cursor-pointer">
-				Save Event
-			</button>
+			<div className="flex gap-4">
+				<button type="submit" className="flex-1 px-4 py-2 bg-primary text-white rounded cursor-pointer">Save Event</button>
+				<button type="button"
+					onClick={() => {
+						if (window.confirm("Are you sure you want to delete this event?"))
+							onDelete(initialData._id)
+					}}
+					className="px-4 py-2 bg-primary text-red-400 rounded cursor-pointer">Delete Event</button>
+			</div>
 		</form>
 	);
 }
@@ -128,13 +138,13 @@ export default function Events() {
 
 	const handleSave = async (data) => {
 		if (editingEvent) {
-			const res = await fetch(`/api/events/${editingEvent.id}`, {
+			const res = await fetch(`/api/events/${editingEvent._id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(data),
 			})
 			const updated = await res.json()
-			setEvents(events.map(ev => ev.id === updated.id ? updated : ev))
+			setEvents(events.map(ev => ev._id === updated._id ? updated : ev))
 		} else {
 			const res = await fetch("/api/events", {
 				method: "POST",
@@ -147,6 +157,17 @@ export default function Events() {
 		setEditingEvent(null)
 		setModalOpen(false)
 	}
+
+	const handleDelete = async (id) => {
+		const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
+		if (res.ok) {
+			setEvents(events.filter(ev => ev._id !== id));
+			setEditingEvent(null);
+			setModalOpen(false);
+		} else {
+			console.error("Failed to delete event");
+		}
+	};
 
 	const openAddForm = () => {
 		setEditingEvent(null)
@@ -171,7 +192,7 @@ export default function Events() {
 
 			<div className="flex flex-col gap-8">
 				{events.map(event => (
-					<div key={event.id} className="border-l border-gray-300 pl-8 pb-4">
+					<div key={event._id} className="border-l border-gray-300 pl-8 pb-4">
 						<div className="flex mb-2 gap-4 mx-auto w-fit">
 						<h2 className="text-xl font-bold">{event.name}</h2>
 						<button onClick={() => openEditForm(event)}
@@ -182,7 +203,7 @@ export default function Events() {
 							</svg>
 						</button>
 						</div>
-						<p>Date: {event.date}</p>
+						<p>Date: {new Date(event.date).toLocaleDateString()}</p>
 						<p>Location: {event.location}</p>
 						<p>Description: {event.description}</p>
 						<h3 className="mt-2">Games:</h3>
@@ -202,6 +223,7 @@ export default function Events() {
 					<EventForm
 						initialData={editingEvent || {}}
 						onSave={handleSave}
+						onDelete={handleDelete}
 					/>
 				</Modal>
 			)}

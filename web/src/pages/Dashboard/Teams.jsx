@@ -55,7 +55,7 @@ export default function Teams()
 		const res = fetch(`/api/teams/${teamId}/members/${login}`, {
 			method,
 		}).then(res => res.json()).then(updatedTeam => {
-			setTeams(teams.map(t => t.id === updatedTeam.id ? updatedTeam : t))
+			setTeams(teams.map(t => t._id === updatedTeam._id ? updatedTeam : t))
 			setEditingTeam(updatedTeam)
 		}).catch(err => {
 			console.error("Failed adding member:", err)
@@ -70,7 +70,7 @@ export default function Teams()
 					onClick={() => {openEditForm(null)}}
 				>+ Add Team</button>
 			{teams.map(team => (
-				<div key={team.id} className="">
+				<div key={team._id} className="">
 					<p>{team.name}:</p>
 					<div className="flex space-x-4 justify-center items-center flex-wrap">
 						{team?.members.map(member => (
@@ -131,7 +131,7 @@ export default function Teams()
 				{editingTeam.members.map((member, i) => (
 					<div key={i} className="flex items-center justify-between gap-4">
 						<p className="ml-4">{member.login}</p>
-						<button onClick={() => handleUpdateMember(editingTeam.id, member.login, "DELETE")}
+						<button onClick={() => handleUpdateMember(editingTeam._id, member.login, "DELETE")}
 							className="text-red-400 bg-primary py-2 px-4 rounded cursor-pointer"
 						>Delete</button>
 					</div>
@@ -139,7 +139,7 @@ export default function Teams()
 				<form
 					onSubmit={(e) => {
 						e.preventDefault()
-						handleUpdateMember(editingTeam.id, e.target.login.value, "POST")
+						handleUpdateMember(editingTeam._id, e.target.login.value, "POST")
 						e.target.reset()
 					}}
 					className="flex items-center gap-4"
