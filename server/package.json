@@ -13,6 +13,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.16.1",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/jwt": "^10.0.0",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "fastify": "^5.6.1",

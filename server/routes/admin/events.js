@@ -1,5 +1,5 @@
 import fastify from 'fastify';
-import Events from '../models/Events.js';
+import Events from '../../models/Events.js';
 
 export default async function (fastify, opts) {
 	fastify.get('/', async () => await Events.find().lean());

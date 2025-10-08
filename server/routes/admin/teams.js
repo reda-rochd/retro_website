@@ -1,7 +1,7 @@
 import fastify from 'fastify';
 import mongoose from 'mongoose';
-import Teams from '../models/Teams.js';
-import Users from '../models/Users.js';
+import Teams from '../../models/Teams.js';
+import Users from '../../models/Users.js';
 
 export default async function (fastify, opts) {
 	fastify.get('/', async (request, reply) => await Teams.find().populate('members').lean());
@@ -10,8 +10,8 @@ export default async function (fastify, opts) {
 		const logins = request.body.members.map(m => m.login);
 		const users = await Users.find({ login: { $in: logins } }).select('_id');
 
-		if (users.length !== logins.length)
-			return reply.status(400).send({ error: 'Some members not found' });
+		// if (users.length !== logins.length)
+		// 	return reply.status(400).send({ error: 'Some members not found' });
 
 		const teamName = `Team ${await Teams.countDocuments() + 1}`;
 
@@ -22,6 +22,13 @@ export default async function (fastify, opts) {
 		});
 
 		return reply.status(201).send(await newTeam.populate('members'));
+	});
+
+	fastify.delete('/:id', async (request, reply) => {
+		const deletedTeam = await Teams.findByIdAndDelete(request.params.id);
+		if (!deletedTeam)
+			return reply.status(404).send({ error: 'Team not found' });
+		return deletedTeam;
 	});
 
 	fastify.post('/:teamId/members/:memberLogin', async (request, reply) => {

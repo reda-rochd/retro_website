@@ -43,7 +43,11 @@ export default function Teams()
 				members: tempMembers.filter(m => m.login.trim() !== "")
 			})
 		}).then(res => res.json()).then(newTeam => {
-			setTeams([...teams, newTeam])
+			if(!newTeam._id) {
+				console.error("Failed creating team:", newTeam)
+			} else {
+				setTeams([...teams, newTeam])
+			}
 			setModalOpen(false)
 			setTempMembers([create_empty_member()])
 		}).catch(err => {
@@ -51,10 +55,25 @@ export default function Teams()
 		})
 	}
 
+	const handleDeleteTeam = async (teamId) => {
+		const res = await fetch(`/api/teams/${teamId}`, { method: "DELETE" });
+		if (res.ok) {
+			setTeams(teams.filter(t => t._id !== teamId));
+			setModalOpen(false);
+			setEditingTeam(null);
+		} else {
+			console.error("Failed deleting team");
+		}
+	}
+
 	const handleUpdateMember = (teamId, login, method) => {
 		const res = fetch(`/api/teams/${teamId}/members/${login}`, {
 			method,
 		}).then(res => res.json()).then(updatedTeam => {
+			if (!updatedTeam._id) {
+				console.error("Failed updating member:", updatedTeam)
+				return
+			}
 			setTeams(teams.map(t => t._id === updatedTeam._id ? updatedTeam : t))
 			setEditingTeam(updatedTeam)
 		}).catch(err => {
@@ -73,10 +92,10 @@ export default function Teams()
 				<div key={team._id} className="">
 					<p>{team.name}:</p>
 					<div className="flex space-x-4 justify-center items-center flex-wrap">
-						{team?.members.map(member => (
+						{team?.members?.map(member => (
 							<div key={member.login} className="text-center relative">
 								<img
-									src={member.avatarUrl}
+									src={member.avatarUrl === "" ? null : member.avatarUrl}
 									alt={member.login}
 									className="w-16 h-16 rounded-full mx-auto mb-1"
 								/>
@@ -96,7 +115,7 @@ export default function Teams()
 			))}
 
 		{modalOpen && (
-		<Modal onClose={() => setModalOpen(false)}>
+		<Modal onClose={() => {setModalOpen(false); setEditingTeam(null); setTempMembers([create_empty_member()])}}>
 			<h2 className="text-2xl font-bold mb-4">{editingTeam ? "Edit Team" : "Add New Team"}</h2>
 			{!editingTeam && (
 				<form onSubmit={handleCreateTeam} className="flex flex-col gap-4">
@@ -128,10 +147,10 @@ export default function Teams()
 
 			{editingTeam && (
 				<div className="flex flex-col gap-2">
-				{editingTeam.members.map((member, i) => (
+				{editingTeam?.members?.map((member, i) => (
 					<div key={i} className="flex items-center justify-between gap-4">
 						<p className="ml-4">{member.login}</p>
-						<button onClick={() => handleUpdateMember(editingTeam._id, member.login, "DELETE")}
+						<button onClick={() => handleUpdateMember(editingTeam._id, member._id, "DELETE")}
 							className="text-red-400 bg-primary py-2 px-4 rounded cursor-pointer"
 						>Delete</button>
 					</div>
@@ -149,6 +168,10 @@ export default function Teams()
 					/>
 					<button type="submit" className="bg-primary text-blue-400 px-6 py-2 rounded cursor-pointer">Add</button>
 				</form>
+				<button type="button"
+					onClick={() => {if (window.confirm("Are you sure?")) handleDeleteTeam(editingTeam._id)}}
+					className="text-red-400 bg-primary py-2 px-4 rounded cursor-pointer w-fit m-auto"
+				>Delete Team</button>
 				</div>
 			)}
 		</Modal>
