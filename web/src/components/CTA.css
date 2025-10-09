@@ -1,6 +1,8 @@
+:root { --float-duration: 6s; }
+
 .cta {
 	position: relative;
-	padding: 5px 50px;
+	padding: 10px 50px;
 	border: 1px solid #ccc;
 	border-radius: 5% / 100%;
 	box-shadow:
@@ -8,6 +10,8 @@
 		inset 0 0 5px var(--color-accent-flamingo-queen);
 	/* text-shadow: 0 0 10px var(--color-accent-cerise-pink); */
 	transition: all 0.3s ease-in;
+	will-change: transform;
+	animation: floatY var(--float-duration) ease-in-out infinite;
 }
 
 .cta::before {
@@ -20,8 +24,17 @@
 	filter: blur(15px);
 	opacity: .3;
 	transition: all 0.3s ease-in;
+	animation: haloSlide var(--float-duration) infinite ease-in-out;
 }
 
-.cta:hover::before {
-	opacity: .5;
+@keyframes floatY {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes haloSlide {
+  0%   { filter: blur(10px); opacity: .20; }
+  50%  { filter: blur(18px); opacity: .50; }
+  100% { filter: blur(10px); opacity: .20; }
 }

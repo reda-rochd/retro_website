@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react"
 import Modal from "../../components/Modal.jsx"
 import Form from "./Form.jsx"
+import api from "/src/api/client.js"
 
 
 function EventForm({ initialData = {}, onSave, onDelete }) {
 	const [games, setGames] = useState(initialData.games || []);
 
 	const handleAddGame = () => {
-		setGames([...games, { name: "", score: 0 }]);
+		setGames([...games, { name: "" }]);
 	};
 
 	const handleChangeGame = (index, field, value) => {
@@ -82,7 +83,15 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 						onChange={(e) => handleChangeGame(index, "name", e.target.value)}
 						placeholder="Game Name"
 						required
-						className="w-1/2 px-4 border-l border-gray-500"
+						className="w-1/2 px-0 border-b border-gray-500"
+					/>
+					<input
+						type="text"
+						value={game.game_master || ""}
+						onChange={(e) => handleChangeGame(index, "game_master", e.target.value)}
+						placeholder="Game Master"
+						required
+						className="w-1/2 px-0 border-b border-gray-500"
 					/>
 					<input
 						type="number"
@@ -90,7 +99,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 						onChange={(e) => handleChangeGame(index, "score", Number(e.target.value))}
 						placeholder="Score"
 						required
-						className="w-1/2 px-4 border-l border-gray-500"
+						className="w-1/4 px-0 border-b border-gray-500"
 					/>
 					<button
 						type="button"
@@ -122,51 +131,32 @@ export default function Events() {
 	const [editingEvent, setEditingEvent] = useState(null)
 
 	useEffect(() => {
-		const fetchEvents = async () => {
-			try {
-				const res = await fetch("/api/dashboard/events")
-				if (!res.ok) throw new Error("Failed to fetch")
-				const json = await res.json()
-				setEvents(json)
-			} catch (err) {
-				console.error("Failed fetching events:", err)
-			} finally {
-				setLoading(false)
-			}
-		}
-		fetchEvents()
+		api.get('/admin/events')
+			.then(res => setEvents(res.data))
+			.catch(err => console.error("Failed fetching events:", err))
+			.finally(() => setLoading(false));
 	}, [])
 
 	const handleSave = async (data) => {
 		if (editingEvent) {
-			const res = await fetch(`/api/dashboard/events/${editingEvent._id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			})
-			const updated = await res.json()
-			setEvents(events.map(ev => ev._id === updated._id ? updated : ev))
+			const { data: updated } = await api.put(`/admin/events/${editingEvent._id}`, data);
+			setEvents(events.map(ev => ev._id === updated._id ? updated : ev));
 		} else {
-			const res = await fetch("/api/dashboard/events", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(data),
-			})
-			const saved = await res.json()
-			setEvents([...events, saved])
+			const { data: saved } = await api.post("/admin/events", data);
+			setEvents([...events, saved]);
 		}
-		setEditingEvent(null)
-		setModalOpen(false)
-	}
+		setEditingEvent(null);
+		setModalOpen(false);
+	};
 
 	const handleDelete = async (id) => {
-		const res = await fetch(`/api/dashboard/events/${id}`, { method: "DELETE" });
-		if (res.ok) {
+		try {
+			await api.delete(`/admin/events/${id}`);
 			setEvents(events.filter(ev => ev._id !== id));
 			setEditingEvent(null);
 			setModalOpen(false);
-		} else {
-			console.error("Failed to delete event");
+		} catch (err) {
+			console.error("Failed to delete event:", err);
 		}
 	};
 
@@ -193,31 +183,54 @@ export default function Events() {
 
 			<div className="flex flex-col gap-8">
 				{events?.map(event => (
-					<div key={event._id} className="border-l border-gray-300 pl-8 pb-4">
+					<div key={event._id} className="pl-7">
 						<div className="flex mb-2 gap-4 mx-auto w-fit">
-						<h2 className="text-xl font-bold">{event.name}</h2>
-						<button onClick={() => openEditForm(event)}
-							className="cursor-pointer px-2 text-white rounded"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-								<path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652l-1.688 1.687m-2.651-2.651L6.75 16.5a2.25 2.25 0 00-.562.975l-.621 2.485a.75.75 0 00.91.91l2.486-.621a2.25 2.25 0 00.975-.562L19.513 7.138m-2.651-2.651L19.5 7.125" />
-							</svg>
-						</button>
+							<h2 className="text-xl font-bold">{event.name}</h2>
+							<button onClick={() => openEditForm(event)} className="cursor-pointer px-2 text-white rounded">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+									<path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652l-1.688 1.687m-2.651-2.651L6.75 16.5a2.25 2.25 0 00-.562.975l-.621 2.485a.75.75 0 00.91.91l2.486-.621a2.25 2.25 0 00.975-.562L19.513 7.138m-2.651-2.651L19.5 7.125" />
+								</svg>
+							</button>
 						</div>
-						<p>Date: {new Date(event.date).toLocaleDateString()}</p>
-						<p>Location: {event.location}</p>
-						<p>Description: {event.description}</p>
-						<h3 className="mt-2">Games:</h3>
+
+						<div className="flex flex-col gap-2">
+						<p className="flex items-center gap-2 -ml-7">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+								<path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" />
+							</svg>
+							<b>Date:</b> {new Date(event.date).toLocaleDateString()}
+						</p>
+
+						<p className="flex items-center gap-2 -ml-7">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+								<path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 12 17.657 7.343a8 8 0 10-11.314 11.314L12 13.414l5.657 5.657z" />
+							</svg>
+							<b>Location:</b> {event.location}
+						</p>
+
+						<p className="flex items-center gap-2 -ml-7">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+								<path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h10m-5 4h5" />
+							</svg>
+							<b>Description:</b> {event.description}
+						</p>
+						</div>
+
+						<h3 className="mt-2 flex items-center gap-2 font-bold">
+							Games:
+						</h3>
+
 						<ul>
-						{event.games?.map((game, i) => (
-							<li className="ml-4 list-disc" key={i}>
-								{game.name}: {game.score} pts
-							</li>
-						))}
+							{event.games?.map((game, i) => (
+								<li className="ml-4 list-disc" key={game._id}>
+								  {game.name}: {game.score} pts (master: {game.game_master})
+								</li>
+							))}
 						</ul>
 					</div>
 				))}
 			</div>
+
 
 			{modalOpen && (
 				<Modal onClose={() => setModalOpen(false)}>

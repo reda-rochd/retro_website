@@ -1,9 +1,10 @@
-import {Link} from 'react-router-dom'
-import background from '../../assets/hero_background.jpg'
 import './Hero.css'
-import CTA from './CTA.jsx'
+import {Link} from 'react-router-dom'
+import CTA from '/src/components/CTA.jsx'
+import {useAuth} from '/src/contexts/AuthContext.jsx'
 
 export default function Hero() {
+	const { user } = useAuth()
 	return (
 		<section className="hero relative text-center text-white bg-cover bg-center max-w-4xl inset-0 mx-auto">
 			<div className="absolute w-[var(--content-width)] flex justify-between px-5 pt-3 top-0 left-0 right-0 mx-auto">
@@ -13,7 +14,8 @@ export default function Hero() {
 			<div className="py-10 flex flex-col gap-7 items-center">
 				<h1 className="mt-5 headline text-white text-[clamp(2rem,10vw,5rem)] blinker">I<span>nt</span>egrat<span>i</span>on we<span>ek</span></h1>
 				<p className="text-lg w-[clamp(20rem,50%,40rem)]">a time for everyone to come together meet new people share experiences and feel part of the community.</p>
-				<CTA href="/register">Sign in with your intra</CTA>
+				{user && ( <CTA href="/profile" text={`Welcome, ${user.first_name}. Check out your profile.`} /> )}
+				{!user && ( <CTA href="/api/auth/42/login" text="Sign in with 42"/> )}
 			</div>
 		</section>
 	)

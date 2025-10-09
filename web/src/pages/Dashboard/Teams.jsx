@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react"
 import Modal from "../../components/Modal.jsx"
 import Form from "./Form.jsx"
+import api from "/src/api/client.js"
 
 const create_empty_member = () => ({ tmp_id: crypto.randomUUID(), login: "" })
 
@@ -13,74 +14,64 @@ export default function Teams()
 	const [tempMembers, setTempMembers] = useState([create_empty_member()])
 
 	useEffect(() => {
-		const fetchTeams = async () => {
-			try {
-				const res = await fetch("/api/dashboard/teams")
-				if (!res.ok) throw new Error("Failed to fetch")
-				const json = await res.json()
-				setTeams(json)
-			} catch (err) {
-				console.error("Failed fetching teams:", err)
-			} finally {
-				setLoading(false)
-			}
-		}
-		fetchTeams()
-	}, [])
+		api.get('/admin/teams')
+			.then(res => setTeams(res.data))
+			.catch(err => console.error("Failed fetching teams:", err))
+			.finally(() => setLoading(false));
+	}, []);
 
 	const openEditForm = (team) => {
 		setEditingTeam(team)
 		setModalOpen(true)
 	}
 
-	const handleCreateTeam = (e) => {
+	const handleCreateTeam = async (e) => {
 		e.preventDefault();
-		fetch("/api/dashboard/teams", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
+
+		try {
+			const { data: newTeam } = await api.post("/admin/teams", {
 				members: tempMembers.filter(m => m.login.trim() !== "")
-			})
-		}).then(res => res.json()).then(newTeam => {
-			if(!newTeam._id) {
-				console.error("Failed creating team:", newTeam)
-			} else {
-				setTeams([...teams, newTeam])
-			}
-			setModalOpen(false)
-			setTempMembers([create_empty_member()])
-		}).catch(err => {
-			console.error("Failed creating team:", err)
-		})
-	}
+			});
+
+			if (!newTeam._id) console.error("Failed creating team:", newTeam);
+			else setTeams([...teams, newTeam]);
+		} catch (err) {
+			console.error("Failed creating team:", err);
+		} finally {
+			setModalOpen(false);
+			setTempMembers([create_empty_member()]);
+		}
+	};
 
 	const handleDeleteTeam = async (teamId) => {
-		const res = await fetch(`/api/dashboard/teams/${teamId}`, { method: "DELETE" });
-		if (res.ok) {
+		try {
+			await api.delete(`/admin/teams/${teamId}`);
 			setTeams(teams.filter(t => t._id !== teamId));
 			setModalOpen(false);
 			setEditingTeam(null);
-		} else {
-			console.error("Failed deleting team");
+		} catch (err) {
+			console.error("Failed deleting team:", err);
 		}
-	}
+	};
 
-	const handleUpdateMember = (teamId, login, method) => {
-		const res = fetch(`/api/dashboard/teams/${teamId}/members/${login}`, {
-			method,
-		}).then(res => res.json()).then(updatedTeam => {
+	const handleUpdateMember = async (teamId, login, method) => {
+		try {
+			const { data: updatedTeam } = await api({
+				url: `/admin/teams/${teamId}/members/${login}`,
+				method
+			});
+
 			if (!updatedTeam._id) {
-				console.error("Failed updating member:", updatedTeam)
-				return
+				console.error("Failed updating member:", updatedTeam);
+				return;
 			}
-			setTeams(teams.map(t => t._id === updatedTeam._id ? updatedTeam : t))
-			setEditingTeam(updatedTeam)
-		}).catch(err => {
-			console.error("Failed adding member:", err)
-		})
-	}
+
+			setTeams(teams.map(t => t._id === updatedTeam._id ? updatedTeam : t));
+			setEditingTeam(updatedTeam);
+		} catch (err) {
+			console.error("Failed updating member:", err);
+		}
+	};
 
 	if (loading) return <div>Loading...</div>
 	return (
@@ -96,7 +87,7 @@ export default function Teams()
 						{team?.members?.map(member => (
 							<div key={member.login} className="text-center relative">
 								<img
-									src={member.avatarUrl === "" ? null : member.avatarUrl}
+									src={member.avatar_url === "" ? null : member.avatar_url}
 									alt={member.login}
 									className="w-16 h-16 rounded-full mx-auto mb-1"
 								/>

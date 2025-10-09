@@ -2,9 +2,11 @@ import {Schema, model} from 'mongoose';
 
 const usersSchema = new Schema({
 	login: { type: String, required: true, unique: true },
-	firstName: { type: String, default: '' },
-	lastName: { type: String, default: '' },
-	avatarUrl: { type: String, default: '' },
+	intra_id: { type: Number, required: true, unique: true },
+	first_name: { type: String, default: '' },
+	last_name: { type: String, default: '' },
+	avatar_url: { type: String, default: '' },
+	role: { type: String, enum: ['user'], default: 'user' },
 	team: { type: Schema.Types.ObjectId, ref: 'Teams', default: null }
 });
 
