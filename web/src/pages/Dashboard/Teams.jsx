@@ -15,7 +15,8 @@ export default function Teams()
 	useEffect(() => {
 		const fetchTeams = async () => {
 			try {
-				const res = await fetch("/api/teams")
+				const res = await fetch("/api/dashboard/teams")
+				if (!res.ok) throw new Error("Failed to fetch")
 				const json = await res.json()
 				setTeams(json)
 			} catch (err) {
@@ -34,7 +35,7 @@ export default function Teams()
 
 	const handleCreateTeam = (e) => {
 		e.preventDefault();
-		fetch("/api/teams", {
+		fetch("/api/dashboard/teams", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -56,7 +57,7 @@ export default function Teams()
 	}
 
 	const handleDeleteTeam = async (teamId) => {
-		const res = await fetch(`/api/teams/${teamId}`, { method: "DELETE" });
+		const res = await fetch(`/api/dashboard/teams/${teamId}`, { method: "DELETE" });
 		if (res.ok) {
 			setTeams(teams.filter(t => t._id !== teamId));
 			setModalOpen(false);
@@ -67,7 +68,7 @@ export default function Teams()
 	}
 
 	const handleUpdateMember = (teamId, login, method) => {
-		const res = fetch(`/api/teams/${teamId}/members/${login}`, {
+		const res = fetch(`/api/dashboard/teams/${teamId}/members/${login}`, {
 			method,
 		}).then(res => res.json()).then(updatedTeam => {
 			if (!updatedTeam._id) {

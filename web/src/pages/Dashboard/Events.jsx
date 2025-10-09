@@ -124,7 +124,8 @@ export default function Events() {
 	useEffect(() => {
 		const fetchEvents = async () => {
 			try {
-				const res = await fetch("/api/events")
+				const res = await fetch("/api/dashboard/events")
+				if (!res.ok) throw new Error("Failed to fetch")
 				const json = await res.json()
 				setEvents(json)
 			} catch (err) {
@@ -138,7 +139,7 @@ export default function Events() {
 
 	const handleSave = async (data) => {
 		if (editingEvent) {
-			const res = await fetch(`/api/events/${editingEvent._id}`, {
+			const res = await fetch(`/api/dashboard/events/${editingEvent._id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(data),
@@ -146,7 +147,7 @@ export default function Events() {
 			const updated = await res.json()
 			setEvents(events.map(ev => ev._id === updated._id ? updated : ev))
 		} else {
-			const res = await fetch("/api/events", {
+			const res = await fetch("/api/dashboard/events", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(data),
@@ -159,7 +160,7 @@ export default function Events() {
 	}
 
 	const handleDelete = async (id) => {
-		const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
+		const res = await fetch(`/api/dashboard/events/${id}`, { method: "DELETE" });
 		if (res.ok) {
 			setEvents(events.filter(ev => ev._id !== id));
 			setEditingEvent(null);
@@ -191,7 +192,7 @@ export default function Events() {
 			</button>
 
 			<div className="flex flex-col gap-8">
-				{events.map(event => (
+				{events?.map(event => (
 					<div key={event._id} className="border-l border-gray-300 pl-8 pb-4">
 						<div className="flex mb-2 gap-4 mx-auto w-fit">
 						<h2 className="text-xl font-bold">{event.name}</h2>
