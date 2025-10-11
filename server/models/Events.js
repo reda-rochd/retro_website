@@ -8,7 +8,8 @@ const eventsSchema = new Schema({
 	games: [{
 		name: {type: String, required: true},
 		game_master: {type: Schema.Types.ObjectId, ref: 'Users', required: true},
-		score: {type: Number, required: true},
+		score: {type: Number, default: 0, required: true},
+		solo_game: {type: Boolean, default: false},
 	}],
 	createdAt: {type: Date, default: Date.now},
 });

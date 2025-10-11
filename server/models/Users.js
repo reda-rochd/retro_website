@@ -5,9 +5,12 @@ const usersSchema = new Schema({
 	intra_id: { type: Number, required: true, unique: true },
 	first_name: { type: String, default: '' },
 	last_name: { type: String, default: '' },
+	is_new_student: { type: Boolean, default: true },
 	avatar_url: { type: String, default: '' },
 	role: { type: String, enum: ['user'], default: 'user' },
-	team: { type: Schema.Types.ObjectId, ref: 'Teams', default: null }
+	team: { type: Schema.Types.ObjectId, ref: 'Teams', default: null },
+	self_score: { type: Number, default: 0 },
+	team_score: { type: Number, default: 0 },
 });
 
 export default model('Users', usersSchema);

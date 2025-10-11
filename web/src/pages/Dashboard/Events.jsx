@@ -83,7 +83,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 						onChange={(e) => handleChangeGame(index, "name", e.target.value)}
 						placeholder="Game Name"
 						required
-						className="w-1/2 px-0 border-b border-gray-500"
+						className="w-1/2 px-0 border-gray-500"
 					/>
 					<input
 						type="text"
@@ -91,7 +91,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 						onChange={(e) => handleChangeGame(index, "game_master", e.target.value)}
 						placeholder="Game Master"
 						required
-						className="w-1/2 px-0 border-b border-gray-500"
+						className="w-2/5 px-0 border-gray-500"
 					/>
 					<input
 						type="number"
@@ -99,14 +99,24 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 						onChange={(e) => handleChangeGame(index, "score", Number(e.target.value))}
 						placeholder="Score"
 						required
-						className="w-1/4 px-0 border-b border-gray-500"
+						className="w-1/6 px-0 border-gray-500"
 					/>
+					<label className="flex items-center gap-1 text-sm text-gray-400 border-gray-500 cursor-pointer">
+						<input
+							type="checkbox"
+							checked={game.solo_game || false}
+							onChange={(e) => handleChangeGame(index, "solo_game", e.target.checked)}
+							className="w-4 h-4 rounded-full border border-gray-500 appearance-none checked:bg-blue-500 checked:border-blue-500 cursor-pointer"
+
+						/>
+						Solo?
+					</label>
 					<button
 						type="button"
 						onClick={() => handleDeleteGame(index)}
-						className="px-4 py-2 bg-primary text-red-400 rounded cursor-pointer"
+						className="px-3 p-1 bg-primary text-red-400 rounded-full cursor-pointer"
 					>
-						Delete
+						&times;
 					</button>
 				</div>
 			))}
