@@ -18,7 +18,7 @@ export default async function (fastify, opts) {
 		);
 
 		if (!team) {
-			const shortId = Math.random().toString(36).slice(-4).toUpperCase();
+			const shortId = Math.random().toString(36).slice(-3).toUpperCase();
 			team = await Teams.create({
 				name: `Team-${shortId}`,
 				members: [userId],

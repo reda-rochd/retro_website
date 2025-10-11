@@ -4,7 +4,7 @@ import Teams from '../models/Teams.js';
 import Users from '../models/Users.js';
 
 export default async function (fastify, options) {
-	fastify.post('/points', async (request, reply) => {
+	fastify.post('/', async (request, reply) => {
 		const { eventId, gameId, userId} = request.body;
 		if (!eventId || !gameId || !userId)
 			return reply.status(400).send({ error: 'Missing required fields' });
@@ -13,10 +13,10 @@ export default async function (fastify, options) {
 		const team = user?.team;
 		const event = await Events.findById(eventId, { games: { $elemMatch: { _id: gameId } } });
 		const game = event?.games?.[0];
+		const solo = game?.solo_game;
 		if (!user || !team || !event || !game)
 			return reply.status(404).send({ error: 'Record not found' });
 
-		const solo = game.solo_game;
 		try{
 			const points = await Points.create({
 				eventId,
@@ -36,8 +36,8 @@ export default async function (fastify, options) {
 		}
 
 		await Teams.findByIdAndUpdate(team._id, { $inc: { score: game.score } });
-		if (solo) await Users.findByIdAndUpdate(userId, { $inc: { self_score: game.score } });
+		if (solo) await Users.findByIdAndUpdate(userId, { $inc: { score: game.score } });
 
-		return reply.status(201).send({ message: 'Points awarded successfully', success: true })
+		return reply.status(201).send({success: true })
 	});
 }

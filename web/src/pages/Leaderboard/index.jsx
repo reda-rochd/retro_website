@@ -1,46 +1,20 @@
 import Section from '../../components/Section'
 import Leaderboard_component from '../../components/Leaderboard.jsx'
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
+import api from '/src/api/client.js';
 
 export default function Leaderboard() {
 	const [activeTab, setActiveTab] = useState('teams');
-	const data = {
-		"teams": [
-			{
-				name: "Team A",
-				avatar: "https://avatars.githubusercontent.com/u/541148?s=200&v=4",
-				points: 120,
-			},
-			{
-				name: "Team C",
-				avatar: "https://avatars.githubusercontent.com/u/541150?s=200&v=4",
-				points: 110,
-			},
-			{
-				name: "Team B",
-				avatar: "https://avatars.githubusercontent.com/u/541151?s=200&v=4",
-				points: 95,
-			},
-		],
-		"individuals": [
-			{
-				name: "Alice",
-				avatar: "https://avatars.githubusercontent.com/u/542151?s=200&v=4",
-				points: 60,
-			},
-			{
-				name: "Bob",
-				avatar: "https://avatars.githubusercontent.com/u/542152?s=200&v=4",
-				points: 55,
-			},
-			{
-				name: "Charlie",
-				avatar: "https://avatars.githubusercontent.com/u/541153?s=200&v=4",
-				points: 50,
-			}
-		]
-	};
+	const [data, setData] = useState({teams: [], individuals: []});
 
+	useEffect(() => {
+		api.get('/leaderboard').then(res => {
+			setData(res.data);
+		}).catch(err => {
+			console.error(err);
+		});
+	}, []);
+		
 	return (
 		<Section>
 			{/* <h1 className="text-4xl font-bold mb-8 text-center">Leaderboard</h1> */}

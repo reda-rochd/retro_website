@@ -5,7 +5,10 @@ import api from "/src/api/client.js"
 
 
 function EventForm({ initialData = {}, onSave, onDelete }) {
-	const [games, setGames] = useState(initialData.games || []);
+	// const [games, setGames] = useState(initialData.games || []);
+	const [games, setGames] = useState(() =>
+		initialData.games ? initialData.games.map(game => ({ ...game })) : []
+	);
 
 	const handleAddGame = () => {
 		setGames([...games, { name: "" }]);
@@ -106,7 +109,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 							type="checkbox"
 							checked={game.solo_game || false}
 							onChange={(e) => handleChangeGame(index, "solo_game", e.target.checked)}
-							className="w-4 h-4 rounded-full border border-gray-500 appearance-none checked:bg-blue-500 checked:border-blue-500 cursor-pointer"
+							className="w-4 h-4 rounded-full bg-white appearance-none checked:bg-blue-500 cursor-pointer"
 
 						/>
 						Solo?
@@ -243,7 +246,7 @@ export default function Events() {
 
 
 			{modalOpen && (
-				<Modal onClose={() => setModalOpen(false)}>
+				<Modal onClose={() => { setModalOpen(false); setEditingEvent(null); }}>
 					<EventForm
 						initialData={editingEvent || {}}
 						onSave={handleSave}

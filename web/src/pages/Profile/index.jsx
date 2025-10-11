@@ -8,10 +8,9 @@ import QRInput from '/src/components/QRInput.jsx'
 import Modal from '/src/components/Modal'
 
 export default function Profile() {
-	// const [qrcode, setQrcode] = useState("my");
 	const { user } = useAuth();
 	const [modalData, setModalData] = useState(null)
-	console.log(user);
+	const [res, setRes] = useState(null)
 
 	const handleScan = (eventId, gameId, scan) => {
 		const parts = scan.split("|")
@@ -27,30 +26,40 @@ export default function Profile() {
 	const confirmAward = async () => {
 		if (!modalData) return
 		const { eventId, gameId, userData } = modalData
-		try {
-			await api.post('/points', {
-				eventId,
-				gameId,
-				userId: userData.id 
-			})
-			// TODO: await server response and show success message
-		} finally {
-			setModalData(null) // TODO: only if success
+		setRes(null)
+		const response = await api.post('/points', {
+			eventId,
+			gameId,
+			userId: userData.id 
+		})
+		if (response.status === 201) {
+			setRes({ success: true, message: "Points awarded successfully" })
+			setTimeout(closeModal, 2000)
+		} else if (response.status === 409) {
+			setRes({ success: false, message: "Points have already been awarded to this team for this game" })
+		} else {
+			setRes({ success: false, message: "Failed to award points" })
 		}
 	}
 
-	const cancelAward = () => setModalData(null)
+	const closeModal = () => {
+		setModalData(null)
+		setRes(null)
+	}
 
 	return (
 		<Section>
+			{
+				console.log(user)
+			}
 			<div className="flex flex-col items-center ">
 				<BlobShape avatar={user.avatar_url} size="125" />
 				<p className="text-2xl">{user.name}</p>
 			</div>
-			{user.gamemasterGames?.length === 0 && (
+			{true && (
 			<div className="flex items-center gap-8 justify-center">
 				{
-					[user.self_score, user.team_score].map((score, index) => (
+					[user.score, user.team.score].map((score, index) => (
 						<div key={index} className="flex flex-col items-center">
 							<span className="text-xl gradient-text">{score}</span>
 							<span className="text-xs text-gray-600">{index === 0 ? 'My' : 'Team'} Score</span>
@@ -59,7 +68,7 @@ export default function Profile() {
 				}
 			</div>
 			)}
-			{user.team && user.gamemasterGames?.length === 0 && (
+			{user.team && (
 				<div className="flex flex-col items-center">
 					<h3 className="my-2">Team</h3>
 					<div className="flex gap-4 flex-wrap justify-center">
@@ -85,7 +94,7 @@ export default function Profile() {
 							{event.games.map(game => (
 								<div key={game._id} className="mb-4 flex gap-4 items-center w-full">
 									<span className="w-2/3">{game.name}</span>
-									<span className="w-1/8 gradient-text">{game.score} pts</span>
+									<span className="w-1/6 gradient-text">{game.score} pts</span>
 									<QRInput
 									placeholder="Award"
 									className="bg-secondary/40 rounded-lg shadow-md w-fit p-2"
@@ -114,11 +123,12 @@ export default function Profile() {
 			)}
 
 		{modalData && (
-			<Modal onClose={cancelAward}>
+			<Modal onClose={closeModal}>
 				<div className="p-6 flex flex-col items-center gap-4 z-80">
 					<p>Award points to {modalData.userData.name}?</p>
 					<img src={`https://cdn.intra.42.fr/users/${modalData.userData.img}`} className="w-32 h-32 rounded-full"/>
 					<button onClick={confirmAward} className="bg-primary px-8 py-2 rounded-lg cursor-pointer">Award</button>
+					{res && <p className={res.success ? "text-green-500" : "text-red-500"}>{res.message}</p>}
 				</div>
 			</Modal>
 		)}

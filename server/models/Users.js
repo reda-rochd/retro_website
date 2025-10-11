@@ -7,10 +7,11 @@ const usersSchema = new Schema({
 	last_name: { type: String, default: '' },
 	is_new_student: { type: Boolean, default: true },
 	avatar_url: { type: String, default: '' },
-	role: { type: String, enum: ['user'], default: 'user' },
+	role: { type: String, enum: ['user', 'leader'], default: 'user' },
 	team: { type: Schema.Types.ObjectId, ref: 'Teams', default: null },
-	self_score: { type: Number, default: 0 },
-	team_score: { type: Number, default: 0 },
+	score: { type: Number, default: 0 },
 });
+
+usersSchema.index({score: -1});
 
 export default model('Users', usersSchema);
