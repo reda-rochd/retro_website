@@ -17,22 +17,24 @@ export default function Auth() {
 	}
 
 	return (
-		<div className="flex justify-center h-[calc(100vh_-_2px)] overflow-hidden max-w-md mx-auto text-center flex-col gap-6 bg-primary/85 rounded-[var(--radius)] shadow-lg px-2">
-			<div className="flex flex-col items-center">
-			<h1 className="text-2xl">Welcome to the Authentication Page</h1>
-			<p className="mt-2">Please sign in to continue.</p>
-			<CTA
-				href={`/api/auth/42/login?redirect=${redirect}`}
-				text="Sign in with your 42 account"
-				className="w-fit m-auto mt-7"
-			/>
-			{error && (
-				<h1 className="text-red-700 mt-7 font-bold">
-					{
-						errorMessages[error] || 'An unknown error occurred. Please try again.'
-					}
-				</h1>
-			)}
+		<div className="flex items-center justify-center h-screen">
+			<div className="flex flex-col justify-center items-center h-[75vh] overflow-hidden max-w-md mx-auto text-center gap-6 bg-primary/85 rounded-[var(--radius)] shadow-lg px-10">
+				<div className="flex flex-col items-center">
+				<h1 className="text-2xl">Welcome to the Authentication Page</h1>
+				<p className="mt-2">Please sign in to continue.</p>
+				<CTA
+					href={`/api/auth/42/login?redirect=${redirect}`}
+					text="Sign in with your 42 account"
+					className="w-fit m-auto mt-7"
+				/>
+				{error && (
+					<h1 className="text-red-700 mt-7 font-bold">
+						{
+							errorMessages[error] || 'An unknown error occurred. Please try again.'
+						}
+					</h1>
+				)}
+				</div>
 			</div>
 		</div>
 	);

@@ -2,6 +2,28 @@
 
 @import 'tailwindcss';
 
+body > * {
+	animation: zoom-in 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+	transform-origin: center;
+	will-change: transform, opacity, filter;
+	contain: layout paint;
+}
+
+@keyframes zoom-in {
+	0% {
+		transform: scale(1.04);
+		opacity: 0;
+		filter: blur(20px);
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+		filter: blur(0);
+	}
+}
+
+
+
 @theme {
 	--radius: 22px;
 	--content-width: min(100%, 700px);

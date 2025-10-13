@@ -14,4 +14,6 @@ const eventsSchema = new Schema({
 	createdAt: {type: Date, default: Date.now},
 });
 
+eventsSchema.index({ date: -1 });
+
 export default model('Events', eventsSchema);
