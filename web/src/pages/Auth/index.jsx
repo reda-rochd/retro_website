@@ -1,9 +1,12 @@
 import { useLocation } from 'react-router-dom';
-import CTA from '../../components/CTA';
+import { useAuth } from '/src/contexts/AuthContext';
+import CenteredLayout from '/src/components/CenteredLayout';
+import CTA from '/src/components/CTA';
 
 export default function Auth() {
 	const location = useLocation();
 	const redirect = encodeURIComponent(location.state?.from?.pathname || '/');
+	const { user } = useAuth();
 
 	const params = new URLSearchParams(location.search);
 	const error = params.get('error');
@@ -17,26 +20,25 @@ export default function Auth() {
 	}
 
 	return (
-		<div className="flex items-center justify-center h-screen">
-			<div className="flex flex-col justify-center items-center h-[75vh] overflow-hidden max-w-md mx-auto text-center gap-6 bg-primary/85 rounded-[var(--radius)] shadow-lg px-10">
-				<div className="flex flex-col items-center">
-				<h1 className="text-2xl">Welcome to the Authentication Page</h1>
-				<p className="mt-2">Please sign in to continue.</p>
-				<CTA
-					href={`/api/auth/42/login?redirect=${redirect}`}
-					text="Sign in with your 42 account"
-					className="w-fit m-auto mt-7"
-				/>
-				{error && (
-					<h1 className="text-red-700 mt-7 font-bold">
-						{
-							errorMessages[error] || 'An unknown error occurred. Please try again.'
-						}
-					</h1>
-				)}
-				</div>
+		<CenteredLayout>
+			<div className="flex flex-col items-center">
+			<h1 className="text-2xl">Welcome to the Authentication Page</h1>
+			<p className="mt-2">{user ? `You are logged in as ${user.first_name} ${user.last_name}.` : 'Please sign in to continue.'}</p>
+			<a
+				href={user ? `/` : `/api/auth/42/login?redirect=${redirect}`}
+				className=" cta w-fit m-auto mt-7"
+			>
+				{user ? 'Go to Home' : 'Sign in with 42'}
+			</a>
+			{!user && error && (
+				<h1 className="text-red-700 mt-7 font-bold">
+					{
+						errorMessages[error] || 'An unknown error occurred. Please try again.'
+					}
+				</h1>
+			)}
 			</div>
-		</div>
+		</CenteredLayout>
 	);
 }
 

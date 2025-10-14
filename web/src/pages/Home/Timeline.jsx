@@ -1,9 +1,23 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Section from "../../components/Section.jsx";
+import api from '/src/api/client.js';
 import './Timeline.css';
 
-export default function Timeline({ events = [] }) {
+function makeFakeText(len = 3) {
+	const pool = ['coming', 'soon', 'awaiting', 'unveiled', 'mystery', 'story', 'echoes', 'rise', 'next', 'whisper'];
+	return Array.from({ length: len }, () => pool[Math.floor(Math.random() * pool.length)]).join(' ');
+}
+
+
+export default function Timeline() {
 	const containerRef = useRef(null);
+	const [events, setEvents] = useState([]);
+
+	useEffect(() => {
+		api.get('/public/events')
+		.then(res => setEvents(res.data))
+		.catch(console.error);
+	}, []);
 
 	useEffect(() => {
 		const container = containerRef.current;
@@ -78,15 +92,29 @@ export default function Timeline({ events = [] }) {
 				<path id="base" />
 				<path id="highlight" className="highlight" />
 			</svg>
-			{events.map((label, idx) => (
-				<div key={idx} className="timeline-item">
-					<time>{new Date(label.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</time>
-					<h3>{label.name}</h3>
-					<p>{label.description}</p>
-					<span className="circle" aria-hidden="true"></span>
-				</div>
-			))}
-		</Section>
-	);
-}
 
+			{events.map((e, idx) => {
+				const name = e.isUpcoming ? makeFakeText(2) : e.name;
+				const description = e.isUpcoming ? makeFakeText(18) : e.description;
+
+				return (
+					<div
+						key={idx}
+						className={`timeline-item`}	
+					>
+						<time>
+							{new Date(e.date).toLocaleDateString(undefined, {
+								year: 'numeric',
+								month: 'short',
+								day: 'numeric',
+							})}
+						</time>
+						<h3 className={e.isUpcoming && "blur font-light" || ""}>{name}</h3>
+						<p className={e.isUpcoming && "blur" || ""}>{description}</p>
+						<span className="circle" aria-hidden="true"></span>
+					</div>
+				);
+			})}
+		</Section>
+	)
+}

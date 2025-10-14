@@ -118,6 +118,7 @@ export default function Teams() {
 						setEditingTeam(null);
 						setTempMembers([create_empty_member()]);
 					}}
+					className="bg-secondary p-6"
 				>
 					<h2 className="text-2xl font-bold mb-4">
 						{editingTeam ? "Edit Team" : "Add New Team"}

@@ -5,4 +5,3 @@ export default async function (fastify, opts) {
 	fastify.register(teams, { prefix: '/teams' });
 	fastify.register(events, { prefix: '/events' });
 }
-

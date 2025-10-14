@@ -48,10 +48,7 @@ export default function Profile() {
 	}
 
 	return (
-		<Section>
-			{
-				console.log(user)
-			}
+		<Section className="mt-20">
 			<div className="flex flex-col items-center ">
 				<BlobShape avatar={user.avatar_url} size="125" />
 				<p className="text-2xl">{user.name}</p>
@@ -123,11 +120,11 @@ export default function Profile() {
 			)}
 
 		{modalData && (
-			<Modal onClose={closeModal}>
+			<Modal onClose={closeModal} className="bg-primary p-4">
 				<div className="p-6 flex flex-col items-center gap-4 z-80">
 					<p>Award points to {modalData.userData.name}?</p>
 					<img src={`https://cdn.intra.42.fr/users/${modalData.userData.img}`} className="w-32 h-32 rounded-full"/>
-					<button onClick={confirmAward} className="bg-primary px-8 py-2 rounded-lg cursor-pointer">Award</button>
+					<button onClick={confirmAward} className="bg-secondary px-8 py-2 rounded-lg cursor-pointer">Award</button>
 					{res && <p className={res.success ? "text-green-500" : "text-red-500"}>{res.message}</p>}
 				</div>
 			</Modal>

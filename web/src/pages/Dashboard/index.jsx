@@ -9,8 +9,8 @@ export default function Dashboard()
 	const [activeTab, setActiveTab] = useState(tabs[0]);
 
 	return (
-		<>
-			<div className="flex rounded-[var(--radius)] overflow-hidden w-fit m-auto mt-5">
+		<div className="mt-20">
+			<div className="flex rounded-[var(--radius)] overflow-hidden w-fit m-auto">
 				{tabs.map(tab => (
 					<button
 						className={`cursor-pointer py-5 w-30 
@@ -22,10 +22,10 @@ export default function Dashboard()
 					>{tab}</button>
 				))}
 			</div>
-			<section className="section z-2">
+			<section className="section z-2 mt-5">
 				{ activeTab === "Events" && <Events /> }
 				{ activeTab === "Teams" && <Teams /> }
 			</section>
-		</>
+		</div>
 	)
 }

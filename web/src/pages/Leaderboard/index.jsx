@@ -25,7 +25,7 @@ export default function Leaderboard() {
 	}, [])
 
 	return (
-		<Section>
+		<Section className="mt-20">
 			<div className="neon-tab-container">
 				<button
 					className={`${activeTab === 'teams' ? 'active' : ''} neon-tab`}

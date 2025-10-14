@@ -3,7 +3,7 @@ import './CTA.css';
 
 export default function CTA({ href, text, className="" }) {
 	return (
-		<a href={href} className={`cta ${className}`}>{text}</a>
+		<Link to={href} className={`cta ${className}`}>{text}</Link>
 	)
 }
 

@@ -5,7 +5,6 @@ import api from "/src/api/client.js"
 
 
 function EventForm({ initialData = {}, onSave, onDelete }) {
-	// const [games, setGames] = useState(initialData.games || []);
 	const [games, setGames] = useState(() =>
 		initialData.games ? initialData.games.map(game => ({ ...game })) : []
 	);
@@ -64,7 +63,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 				name="description"
 				defaultValue={initialData.description || ""}
 				placeholder="Description"
-				className="w-full px-4 border-l border-gray-500"
+				className="w-full px-4 border-l border-gray-500 h-24"
 			></textarea>
 
 			<div className="flex gap-4 mt-2 items-center justify-between">
@@ -196,7 +195,7 @@ export default function Events() {
 
 			<div className="flex flex-col gap-8">
 				{events?.map(event => (
-					<div key={event._id} className="pl-7">
+					<div key={event._id} className="">
 						<div className="flex mb-2 gap-4 mx-auto w-fit">
 							<h2 className="text-xl font-bold">{event.name}</h2>
 							<button onClick={() => openEditForm(event)} className="cursor-pointer px-2 text-white rounded">
@@ -206,47 +205,45 @@ export default function Events() {
 							</button>
 						</div>
 
-						<div className="flex flex-col gap-2">
-						<p className="flex items-center gap-2 -ml-7">
+						<div className="grid grid-cols-[auto_auto_1fr] gap-x-2 gap-y-1 items-center mb-2">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" />
 							</svg>
-							<b>Date:</b> {new Date(event.date).toLocaleDateString()}
-						</p>
+							<span className="font-bold">Date:</span>
+							<span>{new Date(event.date).toLocaleDateString()}</span>
 
-						<p className="flex items-center gap-2 -ml-7">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 12 17.657 7.343a8 8 0 10-11.314 11.314L12 13.414l5.657 5.657z" />
 							</svg>
-							<b>Location:</b> {event.location}
-						</p>
+							<span className="font-bold">Location:</span>
+							<span>{event.location}</span>
 
-						<p className="flex items-center gap-2 -ml-7">
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M7 8h10M7 12h10m-5 4h5" />
 							</svg>
-							<b>Description:</b> {event.description}
-						</p>
+							<span className="font-bold">Description:</span>
+							<span>{event.description}</span>
 						</div>
 
-						<h3 className="mt-2 flex items-center gap-2 font-bold">
-							Games:
-						</h3>
-
-						<ul>
+						<h3 className="my-2 ml-7 flex items-center gap-2 font-bold">Games:</h3>
+						<ul className="ml-7">
 							{event.games?.map((game, i) => (
 								<li className="ml-4 list-disc" key={game._id}>
-								  {game.name}: {game.score} pts (master: {game.game_master})
+								  {game.name} [{game.score} pts] (master: {game.game_master})
 								</li>
 							))}
 						</ul>
+
 					</div>
 				))}
 			</div>
 
 
 			{modalOpen && (
-				<Modal onClose={() => { setModalOpen(false); setEditingEvent(null); }}>
+				<Modal
+					onClose={() => { setModalOpen(false); setEditingEvent(null); }}
+					className="bg-secondary p-6"
+				>
 					<EventForm
 						initialData={editingEvent || {}}
 						onSave={handleSave}

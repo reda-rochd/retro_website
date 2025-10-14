@@ -2,33 +2,28 @@ import auth from './auth.js';
 import admin from './admin.js';
 import me from './me.js';
 import points from './points.js';
+import public_ from './public.js';
 import leaderboard from './leaderboard.js';
 
 import {authenticate, checkAdmin} from '../plugins/auth.js';
 
-export default function (fastify, opts) {
+export default async function (fastify, opts) {
 	fastify.decorate('authenticate', authenticate);
 	fastify.decorate('checkAdmin', checkAdmin);
 
 	fastify.register(auth, { prefix: '/auth' });
+	fastify.register(public_, { prefix: '/public' });
 
-	fastify.register(admin, {
-		prefix: '/admin',
-		onRequest: [fastify.authenticate, fastify.checkAdmin],
-	});
+	fastify.register(async function authenticatedScope(authFastify) {
+		authFastify.addHook('onRequest', authFastify.authenticate);
 
-	fastify.register(me, {
-		prefix: '/me',
-		onRequest: [fastify.authenticate],
-	});
+		authFastify.register(me, { prefix: '/me' });
+		authFastify.register(points, { prefix: '/points' });
+		authFastify.register(leaderboard, { prefix: '/leaderboard' });
 
-	fastify.register(points, {
-		prefix: '/points',
-		onRequest: [fastify.authenticate],
-	});
-
-	fastify.register(leaderboard, {
-		prefix: '/leaderboard',
-		onRequest: [fastify.authenticate],
+		authFastify.register(async function adminScope(adminFastify) {
+			adminFastify.addHook('onRequest', adminFastify.checkAdmin);
+			adminFastify.register(admin);
+		}, { prefix: '/admin' });
 	});
 }
