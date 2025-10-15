@@ -48,7 +48,7 @@ export default function Profile() {
 	}
 
 	return (
-		<Section className="mt-20">
+		<Section className="mt-20 mb-10">
 			<div className="flex flex-col items-center ">
 				<BlobShape avatar={user.avatar_url} size="125" />
 				<p className="text-2xl">{user.name}</p>

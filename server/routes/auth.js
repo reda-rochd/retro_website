@@ -49,7 +49,14 @@ export default async function (fastify, opts) {
 			const code = req.query.code;
 			if (!code)
 				return reply.redirect(FRONTEND_URL + "/auth?error=no_code");
-			const redirectAfter = req.query.state || "/";
+			let redirectAfter = req.query.state || "/";
+			try {
+				redirectAfter = decodeURIComponent(redirectAfter);
+			} catch (err) {
+				redirectAfter = "/";
+			}
+			if (typeof redirectAfter !== "string" || !redirectAfter.startsWith("/"))
+				redirectAfter = "/";
 
 			const tokenRes = await fetch("https://api.intra.42.fr/oauth/token", {
 				method: "POST",
@@ -92,7 +99,7 @@ export default async function (fastify, opts) {
 			if (isNewStudent && !user.team) await assignStudentToTeam(user._id);
 
 			const jwtToken = fastify.jwt.sign({ userId: user._id, login: user.login }, { expiresIn: '1d' }); 
-			const url = "/auth/callback?token=" + jwtToken + `&redirect=` + redirectAfter;
+			const url = "/auth/callback?token=" + encodeURIComponent(jwtToken) + `&redirect=` + encodeURIComponent(redirectAfter);
 			return reply.redirect(FRONTEND_URL + url);
 		}
 		catch (err) {

@@ -10,6 +10,10 @@ body > * {
 	padding-inline: 1ch;
 }
 
+body {
+	font-family: 'Tilt Neon', cursive;
+}
+
 @theme {
 	--radius: 22px;
 	--content-width: min(100%, 700px);

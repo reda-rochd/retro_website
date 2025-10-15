@@ -9,7 +9,7 @@ export default function Dashboard()
 	const [activeTab, setActiveTab] = useState(tabs[0]);
 
 	return (
-		<div className="mt-20">
+		<div className="mt-20 mb-10">
 			<div className="flex rounded-[var(--radius)] overflow-hidden w-fit m-auto">
 				{tabs.map(tab => (
 					<button

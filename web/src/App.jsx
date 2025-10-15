@@ -23,23 +23,21 @@ function App() {
 	return (
 		<BrowserRouter>
 			<AuthProvider>
-				<div className="font-primary text-base">
-					<Navbar />
-					<AnimatePresence mode="wait">
-						<Routes>
-							<Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-							<Route element={<ProtectedRoute />}>
-								<Route path="/leaderboard" element={<PageWrapper><Leaderboard /></PageWrapper>} />
-								<Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
-								<Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
-							</Route>
-							<Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
-							<Route path="/auth/callback" element={<PageWrapper><AuthCallback /></PageWrapper>} />
-							<Route path="/forbidden" element={<PageWrapper><Forbidden /></PageWrapper>} />
-							<Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
-						</Routes>
-					</AnimatePresence>
-				</div>
+				<Navbar />
+				<AnimatePresence mode="wait">
+					<Routes>
+						<Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+						<Route element={<ProtectedRoute />}>
+							<Route path="/leaderboard" element={<PageWrapper><Leaderboard /></PageWrapper>} />
+							<Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
+							<Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
+						</Route>
+						<Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
+						<Route path="/auth/callback" element={<PageWrapper><AuthCallback /></PageWrapper>} />
+						<Route path="/forbidden" element={<PageWrapper><Forbidden /></PageWrapper>} />
+						<Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+					</Routes>
+				</AnimatePresence>
 			</AuthProvider>
 		</BrowserRouter>
 	);
