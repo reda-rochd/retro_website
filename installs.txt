@@ -1,0 +1,21 @@
+apt install nodejs npm nginx
+
+apt update
+apt install -y gnupg curl software-properties-common ca-certificates
+curl -fsSL https://pgp.mongodb.com/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+apt update
+apt install -y mongodb-org
+
+apt install certbot python3-certbot-nginx -y
+certbot --nginx -d 1337play.com -d www.1337play.com
+
+ln -s /srv/1337play/nginx.conf /etc/nginx/sites-enabled/1337play.com
+ln -s /srv/1337play/1337play.service /etc/systemd/system/1337play.service
+
+adduser --disabled-password --gecos "" deploy
+chmod 700 /home/deploy/.ssh && chmod 600 /home/deploy/.ssh/authorized_keys
+
+pnpm -r install
+pnpm install --filter web --frozen-lockfile
+pnpm --filter web build

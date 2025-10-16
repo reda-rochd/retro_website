@@ -1,0 +1,15 @@
+[Unit]
+Description=Retro Website Fastify API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/srv/1337play/server
+ExecStart=/usr/bin/node /srv/1337play/server/server.js
+Restart=always
+RestartSec=5
+User=deploy
+Group=deploy
+
+[Install]
+WantedBy=multi-user.target

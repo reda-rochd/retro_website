@@ -68,7 +68,7 @@ dist/
 
 # Gatsby files
 .cache/
-public/
+/web/public/
 
 # Vuepress build output
 .vuepress/dist

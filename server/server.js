@@ -7,7 +7,7 @@ import routes from './routes/index.js';
 
 dotenv.config();
 
-await mongoose.connect('mongodb://localhost:27017/ExerciseTesting');
+await mongoose.connect('mongodb://localhost:27017/1337play');
 
 const fastify = Fastify({ logger: true });
 await fastify.register(fastifyCookie);
