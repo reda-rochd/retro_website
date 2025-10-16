@@ -13,13 +13,11 @@ export function AuthProvider({ children }) {
 		return response.data;
 	}, []);
 
-	const login = useCallback(async (token) => {
-		localStorage.setItem("token", token);
+	const login = useCallback(async () => {
 		setLoading(true);
 		try {
 			return await loadUser();
 		} catch (error) {
-			localStorage.removeItem("token");
 			setUser(null);
 			throw error;
 		} finally {
@@ -27,23 +25,19 @@ export function AuthProvider({ children }) {
 		}
 	}, [loadUser]);
 
-	useEffect(() => {
-		const token = localStorage.getItem("token");
-		if (!token) {
-			setLoading(false);
-			return;
-		}
+	const logout = useCallback(async () => {
+		await api.post("/auth/42/logout").catch(() => {});
+		setUser(null);
+	}, []);
 
+	useEffect(() => {
 		loadUser()
-			.catch(() => {
-				localStorage.removeItem("token");
-				setUser(null);
-			})
+			.catch(() => setUser(null))
 			.finally(() => setLoading(false));
 	}, [loadUser]);
 
 	return (
-		<AuthContext.Provider value={{ user, setUser, loading, login }}>
+		<AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
 			{children}
 		</AuthContext.Provider>
 	);
