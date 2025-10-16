@@ -6,6 +6,7 @@ export default function QRScanner({ onScan, placeholder="Scan QR Code", classNam
 	const videoRef = useRef(null);
 	const canvasRef = useRef(null);
 	const scanningRef = useRef(false);
+	const handlingScanRef = useRef(false);
 	const [scanning, setScanning] = useState(false);
 
 
@@ -19,23 +20,32 @@ export default function QRScanner({ onScan, placeholder="Scan QR Code", classNam
 			videoRef.current.srcObject = stream;
 			videoRef.current.play();
 
-			const tick = () => {
+			const tick = async () => {
 				if (!scanningRef.current) return;
 
 				const video = videoRef.current;
 				const canvas = canvasRef.current;
-				const ctx = canvas.getContext("2d");
-
-				if (video.readyState === video.HAVE_ENOUGH_DATA) {
+				const ctx = canvas.getContext("2d", { willReadFrequently: true });
+				if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth && video.videoHeight) {
 					canvas.width = video.videoWidth;
 					canvas.height = video.videoHeight;
 					ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 					const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 					const code = jsQR(imageData.data, canvas.width, canvas.height);
-					if (code) {
-						stopScan();
-						if (onScan) onScan(code.data);
-						return;
+					if (code && !handlingScanRef.current) {
+						handlingScanRef.current = true;
+						try {
+							const result = onScan ? onScan(code.data) : true;
+							const resolved = result && typeof result.then === "function" ? await result : result;
+							if (resolved !== false) {
+								stopScan();
+								return;
+							}
+						} catch (error) {
+							console.error("QR scan handler failed:", error);
+						} finally {
+							handlingScanRef.current = false;
+						}
 					}
 				}
 				requestAnimationFrame(tick);
@@ -44,11 +54,13 @@ export default function QRScanner({ onScan, placeholder="Scan QR Code", classNam
 		} catch (err) {
 			console.error("Camera access denied:", err);
 			scanningRef.current = false;
+			setScanning(false);
 		}
 	};
 
 	const stopScan = () => {
 		scanningRef.current = false;
+		handlingScanRef.current = false;
 		const stream = videoRef.current?.srcObject;
 		if (stream) {
 			stream.getTracks().forEach(track => track.stop());
@@ -92,3 +104,4 @@ export default function QRScanner({ onScan, placeholder="Scan QR Code", classNam
 		</div>
 	);
 }
+

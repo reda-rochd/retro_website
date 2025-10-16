@@ -14,32 +14,39 @@ export default function Profile() {
 
 	const handleScan = (eventId, gameId, scan) => {
 		const parts = scan.split("|")
-		if (parts.length !== 3) return;
+		if (parts.length !== 3) return false;
 		const userData = {
 			id: parts[0],
 			name: parts[1],
 			img: parts[2]
 		}
 		setModalData({ eventId, gameId, userData })
+		return true;
 	}
 
 	const confirmAward = async () => {
 		if (!modalData) return
 		const { eventId, gameId, userData } = modalData
 		setRes(null)
-		const response = await api.post('/points', {
+
+		api.post('/points', {
 			eventId,
 			gameId,
-			userId: userData.id 
+			userId: userData.id
 		})
-		if (response.status === 201) {
-			setRes({ success: true, message: "Points awarded successfully" })
-			setTimeout(closeModal, 2000)
-		} else if (response.status === 409) {
-			setRes({ success: false, message: "Points have already been awarded to this team for this game" })
-		} else {
-			setRes({ success: false, message: "Failed to award points" })
-		}
+		.then(response => {
+			if (response.status === 201) {
+				setRes({ success: true, message: "Points awarded successfully" })
+				setTimeout(closeModal, 2000)
+			} else {
+				setRes({ success: false, message: "Failed to award points" })
+			}
+		})
+		.catch(error => {
+			const status = error.response?.status
+			const message = error.response?.data?.error || "Failed to award points"
+			setRes({ success: false, message })
+		})
 	}
 
 	const closeModal = () => {
@@ -71,10 +78,9 @@ export default function Profile() {
 					<div className="flex gap-4 flex-wrap justify-center">
 						{
 						user.team?.members
-							?.filter(teammate => teammate.login !== user.login)
 							.map((teammate, index) => (
-							<div key={index} className="flex flex-col items-center gap-2">
-								<BlobShape avatar={teammate.avatar_url} size="75" className=""/>
+							<div key={teammate._id} className={`flex flex-col items-center filter contrast-125 ${teammate._id === user._id ? 'opacity-75 grayscale-30' : ''}`}>
+								<BlobShape avatar={teammate.avatar_url} size="75"/>
 								<p className="text-xs text-center">{teammate.login}</p>
 							</div>
 						))
@@ -90,7 +96,7 @@ export default function Profile() {
 						<div key={event.eventId}>
 							{event.games.map(game => (
 								<div key={game._id} className="mb-4 flex gap-4 items-center w-full">
-									<span className="w-2/3">{game.name}</span>
+									<span className="w-full">{game.name}</span>
 									<span className="w-1/6 gradient-text">{game.score} pts</span>
 									<QRInput
 									placeholder="Award"

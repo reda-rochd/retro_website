@@ -5,20 +5,26 @@ import Users from '../models/Users.js';
 
 export default async function (fastify, options) {
 	fastify.post('/', async (request, reply) => {
-		const { eventId, gameId, userId} = request.body;
+		const { eventId, gameId, userId } = request.body;
 		if (!eventId || !gameId || !userId)
 			return reply.status(400).send({ error: 'Missing required fields' });
-		
-		const user = await Users.findById(userId).populate('team');
-		const team = user?.team;
-		const event = await Events.findById(eventId, { games: { $elemMatch: { _id: gameId } } });
-		const game = event?.games?.[0];
-		const solo = game?.solo_game;
-		if (!user || !team || !event || !game)
-			return reply.status(404).send({ error: 'Record not found' });
 
-		try{
-			const points = await Points.create({
+		const user = await Users.findById(userId).populate('team');
+		if (!user) return reply.status(404).send({ error: 'User not found' });
+
+		const team = user.team;
+		if (!team) return reply.status(404).send({ error: 'User is not assigned to a team' });
+
+		const event = await Events.findById(eventId);
+		if (!event) return reply.status(404).send({ error: 'Event not found' });
+
+		const game = event.games?.id(gameId);
+		if (!game) return reply.status(404).send({ error: 'Game not found for this event' });
+
+		const solo = game.solo_game;
+
+		try {
+			await Points.create({
 				eventId,
 				gameId,
 				userId,
@@ -36,8 +42,9 @@ export default async function (fastify, options) {
 		}
 
 		await Teams.findByIdAndUpdate(team._id, { $inc: { score: game.score } });
-		if (solo) await Users.findByIdAndUpdate(userId, { $inc: { score: game.score } });
+		if (solo)
+			await Users.findByIdAndUpdate(userId, { $inc: { score: game.score } });
 
-		return reply.status(201).send({success: true })
+		return reply.status(201).send({ success: true });
 	});
 }

@@ -5,11 +5,11 @@ import CTA from '/src/components/CTA';
 
 export default function Auth() {
 	const location = useLocation();
-	const redirect = encodeURIComponent(location.state?.from?.pathname || '/');
 	const { user } = useAuth();
 
 	const params = new URLSearchParams(location.search);
 	const error = params.get('error');
+	const redirect = encodeURIComponent(location.state?.from?.pathname || params.get('redirect') || '/');
 	// const error = 'access_denied'
 	const errorMessages = {
 		access_denied: 'Access denied. Please try again.',
