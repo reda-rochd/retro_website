@@ -12,6 +12,15 @@ export default function Profile() {
 	const [modalData, setModalData] = useState(null)
 	const [res, setRes] = useState(null)
 
+	const scoreCards = []
+	if (typeof user?.score === 'number') {
+		scoreCards.push({ label: 'My Score', value: user.score })
+	}
+	if (typeof user?.team?.score === 'number') {
+		scoreCards.push({ label: 'Team Score', value: user.team.score })
+	}
+	const showScores = scoreCards.length > 0
+
 	const handleScan = (eventId, gameId, scan) => {
 		const parts = scan.split("|")
 		if (parts.length !== 3) return false;
@@ -60,16 +69,14 @@ export default function Profile() {
 				<BlobShape avatar={user.avatar_url} size="125" />
 				<p className="text-2xl">{user.name}</p>
 			</div>
-			{true && (
+			{showScores && (
 			<div className="flex items-center gap-8 justify-center">
-				{
-					[user.score, user.team.score].map((score, index) => (
-						<div key={index} className="flex flex-col items-center">
-							<span className="text-xl gradient-text">{score}</span>
-							<span className="text-xs text-gray-600">{index === 0 ? 'My' : 'Team'} Score</span>
-						</div>
-					))
-				}
+				{scoreCards.map(({ label, value }) => (
+					<div key={label} className="flex flex-col items-center">
+						<span className="text-xl gradient-text">{value}</span>
+						<span className="text-xs text-gray-600">{label}</span>
+					</div>
+				))}
 			</div>
 			)}
 			{user.team && (
@@ -97,7 +104,7 @@ export default function Profile() {
 							{event.games.map(game => (
 								<div key={game._id} className="mb-4 flex gap-4 items-center w-full">
 									<span className="w-full">{game.name}</span>
-									<span className="w-1/6 gradient-text">{game.score} pts</span>
+									<span className="w-fit shrink-0 gradient-text">{game.score} pts</span>
 									<QRInput
 									placeholder="Award"
 									className="bg-secondary/40 rounded-lg shadow-md w-fit p-2"

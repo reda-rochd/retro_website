@@ -11,7 +11,7 @@ export default async function leaderboard(fastify, opts) {
 		.lean();
 
 		const topUsers = await Users.find(
-			{},
+			{is_new_student: true},
 			{ login: 1, score: 1, avatar_url: 1, team: 1, _id: 0 }
 		)
 		.sort({ score: -1 })

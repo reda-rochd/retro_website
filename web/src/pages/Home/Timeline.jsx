@@ -109,8 +109,8 @@ export default function Timeline() {
 								day: 'numeric',
 							})}
 						</time>
-						<h3 className={e.isUpcoming && "blur font-light" || ""}>{name}</h3>
-						<p className={e.isUpcoming && "blur" || ""}>{description}</p>
+						<h3 className={e.isUpcoming && "select-none blur font-light" || ""}>{name}</h3>
+						<p className={e.isUpcoming && "select-none blur" || ""}>{description}</p>
 						<span className="circle" aria-hidden="true"></span>
 					</div>
 				);

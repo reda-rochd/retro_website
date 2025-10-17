@@ -4,6 +4,7 @@ import me from './me.js';
 import points from './points.js';
 import public_ from './public.js';
 import leaderboard from './leaderboard.js';
+import teams from './teams.js';
 
 import {authenticate, checkAdmin} from '../plugins/auth.js';
 
@@ -18,6 +19,7 @@ export default async function (fastify, opts) {
 		authFastify.addHook('onRequest', authFastify.authenticate);
 
 		authFastify.register(me, { prefix: '/me' });
+		authFastify.register(teams, { prefix: '/teams' });
 		authFastify.register(points, { prefix: '/points' });
 		authFastify.register(leaderboard, { prefix: '/leaderboard' });
 

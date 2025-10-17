@@ -44,7 +44,7 @@ export default async function (fastify, opts) {
 
 	  const member = await Users.findOneAndUpdate(
 		{ login },
-		{ $set: { role: role || 'user' } },
+		{ $set: { role: role || 'user', team: teamId } },
 		{ new: true }
 	  );
 	  if (!member) return reply.status(404).send({ error: 'Member not found' });
