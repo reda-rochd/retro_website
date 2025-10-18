@@ -36,11 +36,11 @@ export default function Event() {
 			<h1 className="text-center text-2xl font-bold">{eventData.name}</h1>
 			
 			<div className="">
-				<div className="grid grid-cols-[1fr_auto_auto_auto] gap-x-4 gap-y-4">
+				<div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4 gap-y-4">
 					<div className="text-gray-500 truncate">Name</div>
 					<div className="text-gray-500 whitespace-nowrap text-left">Score</div>
 					<div className="text-gray-500 whitespace-nowrap text-left">GameMaster</div>
-					<div className="text-gray-500 whitespace-nowrap text-center">Solo pts</div>
+					<div className="text-gray-500 whitespace-nowrap text-center">Mode</div>
 
 					{eventData.games && eventData.games.length > 0 ? (
 						eventData.games.map(game => (
@@ -52,7 +52,7 @@ export default function Event() {
 								<a
 									href={`https://profile-v3.intra.42.fr/users/${game.game_master?.login}`}
 									target="_blank"
-									className="flex items-center gap-2 whitespace-nowrap ">
+									className="flex items-center gap-2 truncate ">
 									{game.game_master?.avatar_url && (
 										<img
 											src={game.game_master.avatar_url}

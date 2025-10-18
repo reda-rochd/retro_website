@@ -9,7 +9,7 @@ const eventsSchema = new Schema({
 		name: {type: String, required: true},
 		game_master: {type: Schema.Types.ObjectId, ref: 'Users', required: true},
 		score: {type: Number, default: 0, required: true},
-		solo_game: {type: Boolean, default: false},
+		score_mode: {type: String, enum: ['team-only', 'aggregate', 'collective'], default: 'team-only'},
 	}],
 	createdAt: {type: Date, default: Date.now},
 });

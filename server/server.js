@@ -4,10 +4,16 @@ import Fastify from 'fastify';
 import fastifyJWT from "@fastify/jwt"
 import fastifyCookie from "@fastify/cookie"
 import routes from './routes/index.js';
+import Points from './models/Points.js';
 
 dotenv.config();
 
 await mongoose.connect('mongodb://localhost:27017/1337play');
+try {
+	await Points.syncIndexes();
+} catch (err) {
+	console.error('Failed to sync Points indexes', err);
+}
 
 const fastify = Fastify({ logger: true });
 await fastify.register(fastifyCookie);
