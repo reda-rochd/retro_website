@@ -24,4 +24,26 @@ export default async function (fastify, opts) {
 
 		reply.send(sanitized);
 	});
+
+	fastify.get('/:eventName', async (request, reply) => {
+		const eventName = typeof request.params.eventName === 'string' ? decodeURIComponent(request.params.eventName.trim()) : '';
+
+		if (!eventName)
+			return reply.status(400).send({ error: 'Event name is required' });
+
+		const event = await Events.findOne({ name: eventName })
+			.select('-_id -createdAt -updatedAt')
+			.populate('games.game_master')
+			.lean();
+		if (!event)
+			return reply.status(404).send({ error: 'Event not found' });
+
+		const today = new Date();
+		const eventDate = new Date(event.date);
+		if (eventDate.setHours(0, 0, 0, 0) > today.setHours(0, 0, 0, 0)) {
+			return reply.status(404).send({ error: 'Event not found' });
+		}
+
+		return reply.send(event);
+	});
 }

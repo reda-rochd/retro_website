@@ -6,6 +6,7 @@ import Leaderboard from './pages/Leaderboard/index.jsx'
 import Dashboard from './pages/Dashboard/index.jsx'
 import Profile from './pages/Profile/index.jsx'
 import Team from './pages/Team/index.jsx'
+import Event from './pages/Event/index.jsx'
 
 import Navbar from './components/Navbar.jsx'
 
@@ -28,8 +29,9 @@ function App() {
 				<AnimatePresence mode="wait">
 					<Routes>
 						<Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-						<Route path="/team/:teamName" element={<PageWrapper><Team /></PageWrapper>} />
 						<Route element={<ProtectedRoute />}>
+							<Route path="/event/:eventName" element={<PageWrapper><Event /></PageWrapper>} />
+							<Route path="/team/:teamName" element={<PageWrapper><Team /></PageWrapper>} />
 							<Route path="/leaderboard" element={<PageWrapper><Leaderboard /></PageWrapper>} />
 							<Route path="/dashboard" element={<PageWrapper><Dashboard /></PageWrapper>} />
 							<Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />

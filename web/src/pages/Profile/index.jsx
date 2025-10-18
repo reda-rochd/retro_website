@@ -6,20 +6,12 @@ import Section from '/src/components/Section'
 import BlobShape from '/src/components/BlobShape.jsx'
 import QRInput from '/src/components/QRInput.jsx'
 import Modal from '/src/components/Modal'
+import TeamNameEditor from '/src/components/TeamNameEditor.jsx'
 
 export default function Profile() {
 	const { user } = useAuth();
 	const [modalData, setModalData] = useState(null)
 	const [res, setRes] = useState(null)
-
-	const scoreCards = []
-	if (typeof user?.score === 'number') {
-		scoreCards.push({ label: 'My Score', value: user.score })
-	}
-	if (typeof user?.team?.score === 'number') {
-		scoreCards.push({ label: 'Team Score', value: user.team.score })
-	}
-	const showScores = scoreCards.length > 0
 
 	const handleScan = (eventId, gameId, scan) => {
 		const parts = scan.split("|")
@@ -69,27 +61,37 @@ export default function Profile() {
 				<BlobShape avatar={user.avatar_url} size="125" />
 				<p className="text-2xl">{user.name}</p>
 			</div>
-			{showScores && (
-			<div className="flex items-center gap-8 justify-center">
-				{scoreCards.map(({ label, value }) => (
-					<div key={label} className="flex flex-col items-center">
-						<span className="text-xl gradient-text">{value}</span>
-						<span className="text-xs text-gray-600">{label}</span>
-					</div>
+
+			{user.is_new_student && (
+			  <div className="flex items-center gap-8 justify-center">
+				{[
+				  { value: user.score, label: "My Score" },
+				  { value: user.team?.score ?? 0, label: "Team Score" }
+				].map(({ value, label }, index) => (
+				  <div key={index} className="flex flex-col items-center">
+					<span className="text-xl gradient-text">{value}</span>
+					<span className="text-xs text-gray-600">{label}</span>
+				  </div>
 				))}
-			</div>
+			  </div>
 			)}
+
 			{user.team && (
 				<div className="flex flex-col items-center">
-					<h3 className="my-2">Team</h3>
+					<TeamNameEditor team={user.team} canEdit={user.role === 'leader'} />
 					<div className="flex gap-4 flex-wrap justify-center">
 						{
 						user.team?.members
-							.map((teammate, index) => (
-							<div key={teammate._id} className={`flex flex-col items-center filter contrast-125 ${teammate._id === user._id ? 'opacity-75 grayscale-30' : ''}`}>
+							.map((teammate) => (
+							<a
+								href={`https://profile-v3.intra.42.fr/users/${teammate.login}`}
+								target="_blank"
+								key={teammate._id}
+								className="flex flex-col items-center filter contrast-125"
+							>
 								<BlobShape avatar={teammate.avatar_url} size="75"/>
 								<p className="text-xs text-center">{teammate.login}</p>
-							</div>
+							</a>
 						))
 						}
 					</div>
@@ -97,7 +99,7 @@ export default function Profile() {
 			)}
 
 			{user.gamemasterGames?.length > 0 && (
-				<div className="mt-4">
+				<div>
 					<h3 className="my-2 text-center">Games I'm Managing</h3>
 					{user.gamemasterGames.map(event => (
 						<div key={event.eventId}>

@@ -77,3 +77,27 @@
 	stroke-dashoffset: var(--path-length);
 	transition: stroke-dashoffset 0.1s linear;
 }
+
+
+.timeline-item a {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.timeline-item a::after {
+  content: '→';
+  position: absolute;
+  right: -1.2em;
+  top: calc(50% - 0.75em);
+  font-size: 1em;
+}
+
+.timeline-item a:hover::after {
+  animation: slideArrow 0.5s infinite alternate;
+}
+
+@keyframes slideArrow {
+  from { transform: translateX(0); }
+  to { transform: translateX(5px); }
+}

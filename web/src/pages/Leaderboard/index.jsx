@@ -22,13 +22,14 @@ export default function Leaderboard() {
 				team.avatar_url = topAvatars[team._id]?.avatar_url || ''
 
 			teams.map(team => team.url = `/team/${encodeURIComponent(team.name)}`)
+			individuals.map(user => user.url = `https://profile-v3.intra.42.fr/users/${user.login}`)
 
 			setData({ teams, individuals })
 		}).catch(console.error)
 	}, [])
 
 	return (
-		<Section className="mt-20">
+		<Section className="mt-20 mb-10">
 			<div className="neon-tab-container">
 				<button
 					className={`${activeTab === 'teams' ? 'active' : ''} neon-tab`}

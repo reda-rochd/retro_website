@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Section from "../../components/Section.jsx";
 import api from '/src/api/client.js';
 import './Timeline.css';
@@ -111,6 +112,7 @@ export default function Timeline() {
 						</time>
 						<h3 className={e.isUpcoming && "select-none blur font-light" || ""}>{name}</h3>
 						<p className={e.isUpcoming && "select-none blur" || ""}>{description}</p>
+						{!e.isUpcoming && (<Link to={`/event/${encodeURIComponent(e.name)}`} className="text-sm italic underline mt-2 text-[var(--color-accent-flamingo-queen)]">Learn More</Link>)}
 						<span className="circle" aria-hidden="true"></span>
 					</div>
 				);
