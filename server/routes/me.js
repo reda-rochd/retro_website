@@ -14,8 +14,15 @@ export default async function (fastify, opts) {
 
 			if (!user) return reply.status(404).send({ error: 'User not found' });
 
-			const eventsWithGmGames = await Events.find({ "games.game_master": user._id }).lean();
+			const startOfDay = new Date();
+			startOfDay.setHours(0, 0, 0, 0);
+			const endOfDay = new Date();
+			endOfDay.setHours(23, 59, 59, 999);
 
+			const eventsWithGmGames = await Events.find({
+				"games.game_master": user._id,
+				date: { $gte: startOfDay, $lte: endOfDay }
+			}).lean();
 			const gamemasterGames = eventsWithGmGames.map(event => ({
 				eventId: event._id,
 				eventName: event.name,

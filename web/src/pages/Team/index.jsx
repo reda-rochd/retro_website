@@ -1,0 +1,38 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import api from '/src/api/client.js';
+import Section from '/src/components/Section';
+import Leaderboard from '/src/components/Leaderboard.jsx';
+
+export default function Team() {
+	const { teamName } = useParams();
+	const [teamData, setTeamData] = useState(null);
+
+	useEffect(() => {
+		api.get(`/public/teams/${teamName}`)
+		.then(res => {
+			const members = res.data.members.sort((a, b) => b.score - a.score);
+			setTeamData( {
+				name: res.data.name,
+				score: res.data.score,
+				members: members
+			});
+		})
+		.catch(err => {
+			setTeamData({ error: err.response?.data?.error || 'Failed to load team data' });
+		});
+
+	}, [teamName]);
+
+	if (!teamData) return <Section className="mt-20">Loading team data...</Section>;
+	if (teamData.error) return <Section className="mt-20">Error: {teamData.error}</Section>;
+	return (
+		<Section className="mt-20">
+			<h1 className="text-xl font-bold mb-1 text-center"
+			>{teamData.name}</h1>
+			<p className="text-center text-2xl mb-2 font-semibold">
+				<span className="gradient-text">{teamData.score} pts</span></p>
+			<Leaderboard leaders={teamData.members} rank={false}/>
+		</Section>
+	)
+}

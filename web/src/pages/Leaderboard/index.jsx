@@ -20,6 +20,9 @@ export default function Leaderboard() {
 			}
 			for (const team of teams)
 				team.avatar_url = topAvatars[team._id]?.avatar_url || ''
+
+			teams.map(team => team.url = `/team/${encodeURIComponent(team.name)}`)
+
 			setData({ teams, individuals })
 		}).catch(console.error)
 	}, [])

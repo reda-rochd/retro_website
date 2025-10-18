@@ -4,6 +4,24 @@ import api from "/src/api/client.js";
 
 const create_empty_member = () => ({ tmp_id: crypto.randomUUID(), login: "", role: "user" });
 
+const normalizeLogin = (value) => (typeof value === "string" ? value.trim().toLowerCase() : "");
+const normalizeMember = (member = {}) => ({
+	...member,
+	login: normalizeLogin(member?.login),
+});
+const normalizeTeam = (team) => {
+	if (!team) return team;
+	return {
+		...team,
+		members: Array.isArray(team.members) ? team.members.map(normalizeMember) : [],
+	};
+};
+const normalizeTeamsResponse = (data) => {
+	if (Array.isArray(data)) return data.map(normalizeTeam);
+	if (Array.isArray(data?.teams)) return data.teams.map(normalizeTeam);
+	return [];
+};
+
 export default function Teams() {
 	const [teams, setTeams] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -13,19 +31,26 @@ export default function Teams() {
 
 	useEffect(() => {
 		api.get("/admin/teams")
-			.then(res => setTeams(res.data))
+			.then(res => setTeams(normalizeTeamsResponse(res?.data)))
 			.finally(() => setLoading(false));
 	}, []);
 
 	const openEditForm = (team) => {
-		setEditingTeam(team);
+		setEditingTeam(team ? normalizeTeam(team) : null);
 		setModalOpen(true);
 	};
 
 	const handleCreateTeam = (e) => {
 		e.preventDefault();
-		api.post("/admin/teams", { members: tempMembers.filter(m => m.login.trim() !== "") })
-		.then(res => setTeams(p => [...p, res.data]))
+		const membersPayload = tempMembers
+			.map(member => ({ ...member, login: normalizeLogin(member.login) }))
+			.filter(member => member.login !== "");
+
+		api.post("/admin/teams", { members: membersPayload })
+		.then(res => {
+			if (!res?.data) return;
+			setTeams(p => [...p, normalizeTeam(res.data)]);
+		})
 		.finally(() => {
 			setModalOpen(false);
 			setTempMembers([create_empty_member()]);
@@ -44,13 +69,16 @@ export default function Teams() {
 	const handleRoleChange = (userId, teamId, checked) => {
 		const updateMemberInTeam = (team, userId, updatedUser) => ({
 			...team,
-			members: team.members.map(m => m._id === userId ? updatedUser : m)
+			members: Array.isArray(team.members)
+				? team.members.map(m => (m._id === userId ? normalizeMember(updatedUser) : m))
+				: [],
 		});
 
 		api.put(`/admin/teams/users/${userId}/role`, { role: checked ? "leader" : "user" })
 		.then(res => {
+			if (!res?.data) return;
 			setTeams(p => p.map(t => t._id === teamId ? updateMemberInTeam(t, userId, res.data) : t));
-			setEditingTeam(p => p && p._id === teamId ? updateMemberInTeam(p, userId, res.data) : p);
+			setEditingTeam(p => (p && p._id === teamId ? updateMemberInTeam(p, userId, res.data) : p));
 		})
 	};
 
@@ -67,10 +95,14 @@ export default function Teams() {
 	};
 
 	const handleAddMember = (teamId, login, role) => {
-		api.post(`/admin/teams/${teamId}/members`, { login, role })
+		const normalizedLogin = normalizeLogin(login);
+		if (!normalizedLogin) return;
+		api.post(`/admin/teams/${teamId}/members`, { login: normalizedLogin, role })
 		.then(res => {
-			setTeams(p => p.map(t => t._id === teamId ? res.data : t));
-			setEditingTeam(p => p && p._id === teamId ? res.data : p);
+			if (!res?.data) return;
+			const normalizedTeam = normalizeTeam(res.data);
+			setTeams(p => p.map(t => (t._id === teamId ? normalizedTeam : t)));
+			setEditingTeam(p => (p && p._id === teamId ? normalizedTeam : p));
 		});
 	};
 
@@ -89,16 +121,19 @@ export default function Teams() {
 				<div key={team._id}>
 					<p>{team.name}:</p>
 					<div className="flex space-x-4 justify-center items-center flex-wrap">
-						{team?.members?.map(member => (
-							<div key={member._id} className="text-center relative">
-								<img
-									src={member.avatar_url || undefined}
-									alt={member.login}
-									className="w-16 h-16 rounded-full mx-auto mb-1"
-								/>
-								<div className="text-sm">{member.login}</div>
-							</div>
-						))}
+						{team?.members?.map(member => {
+							const loginDisplay = normalizeLogin(member?.login);
+							return (
+								<div key={member._id} className="text-center relative">
+									<img
+										src={member.avatar_url || undefined}
+										alt={loginDisplay}
+										className="w-16 h-16 rounded-full mx-auto mb-1"
+									/>
+									<div className="text-sm">{loginDisplay}</div>
+								</div>
+							);
+						})}
 						<button
 							onClick={() => openEditForm(team)}
 							className="cursor-pointer p-2 bg-white text-primary rounded self-start mt-4"
@@ -142,7 +177,7 @@ export default function Teams() {
 										value={member.login}
 										onChange={e => {
 											const newMembers = [...tempMembers];
-											newMembers[index].login = e.target.value;
+											newMembers[index].login = e.target.value.toLowerCase();
 											setTempMembers(newMembers);
 										}}
 									/>
@@ -177,35 +212,37 @@ export default function Teams() {
 
 					{editingTeam && (
 						<div className="flex flex-col gap-2">
-							{editingTeam?.members?.map((member, i) => (
-								<div key={member._id} className="flex items-center justify-between gap-4">
-									<p className="ml-4 w-full">{member.login}</p>
-									<label className="flex items-center gap-1 cursor-pointer">
-										<input
-											type="checkbox"
-											checked={member.role === "leader"}
-											className="w-4 h-4 appearance-none rounded bg-white checked:bg-blue-500 cursor-pointer"
-											onChange={e => handleRoleChange(member._id, editingTeam._id, e.target.checked)}
-										/>
-										Leader?
-									</label>
-									<button
-										onClick={() => handleDeleteMember(editingTeam._id, member._id)}
-										className="text-red-400 bg-primary py-2 px-4 rounded cursor-pointer"
-									>
-										Delete
-									</button>
-								</div>
-							))}
+							{editingTeam?.members?.map((member, i) => {
+								const loginDisplay = normalizeLogin(member?.login);
+								return (
+									<div key={member._id} className="flex items-center justify-between gap-4">
+										<p className="ml-4 w-full">{loginDisplay}</p>
+										<label className="flex items-center gap-1 cursor-pointer">
+											<input
+												type="checkbox"
+												checked={member.role === "leader"}
+												className="w-4 h-4 appearance-none rounded bg-white checked:bg-blue-500 cursor-pointer"
+												onChange={e => handleRoleChange(member._id, editingTeam._id, e.target.checked)}
+											/>
+											Leader?
+										</label>
+										<button
+											onClick={() => handleDeleteMember(editingTeam._id, member._id)}
+											className="text-red-400 bg-primary py-2 px-4 rounded cursor-pointer"
+										>
+											Delete
+										</button>
+									</div>
+								);
+							})}
 
 							<form
 								onSubmit={(e) => {
 									e.preventDefault();
-									const login = e.target.login.value.trim();
+									const login = e.target.login.value;
 									const role = e.target.role.checked ? "leader" : "user";
 									if (!login) return;
-
-									handleAddMember(editingTeam._id, login, role)
+									handleAddMember(editingTeam._id, login, role);
 									e.target.reset();
 								}}
 								className="flex items-center gap-4"
