@@ -98,6 +98,8 @@ export default function Profile() {
 				</div>
 			)}
 
+			{console.log(user.gamemasterGames)}
+
 			{user.gamemasterGames?.length > 0 && (
 				<div>
 					<h3 className="my-2 text-center">Games I'm Managing</h3>

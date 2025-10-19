@@ -15,12 +15,17 @@ function normalizeGames(games = []) {
 export default async function (fastify, opts) {
 	fastify.get('/', async (req, reply) => {
 		const now = new Date();
+		const startOfToday = new Date(now);
+		startOfToday.setHours(0, 0, 0, 0);
+		const endOfToday = new Date(now);
+		endOfToday.setHours(23, 59, 59, 999);
 		const events = await Events.find().sort({ startAt: 1 }).lean();
 
 		const sanitized = events.map(e => {
 			const startAt = new Date(e.startAt);
 			const endAt = new Date(e.endAt);
-			const isUpcoming = startAt > now;
+			const isSameDay = startAt >= startOfToday && startAt <= endOfToday;
+			const isUpcoming = !isSameDay && startAt > now;
 			if (isUpcoming) {
 				return {
 					startAt,

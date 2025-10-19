@@ -40,13 +40,14 @@ export default function Event() {
 			
 			<div className="">
 				<div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-2 gap-y-4">
-					<div className="text-sm text-gray-500 truncate">Name</div>
-					<div className="text-sm text-gray-500 whitespace-nowrap text-center">Score</div>
-					<div className="text-sm text-gray-500 whitespace-nowrap text-left">GameMaster</div>
-					<div className="text-sm text-gray-500 whitespace-nowrap text-center">Mode</div>
-
 					{eventData.games && eventData.games.length > 0 ? (
-						eventData.games.map(game => (
+						<>
+						<div className="text-sm text-gray-500 truncate">Name</div>
+						<div className="text-sm text-gray-500 whitespace-nowrap text-center">Score</div>
+						<div className="text-sm text-gray-500 whitespace-nowrap text-left">GameMaster</div>
+						<div className="text-sm text-gray-500 whitespace-nowrap text-center">Mode</div>
+
+						{ eventData.games.map(game => (
 							<React.Fragment key={game._id}>
 								<div className="truncate ">{game.name}</div>
 								<div className="whitespace-nowrap text-center">
@@ -71,9 +72,10 @@ export default function Event() {
 									</span>
 								</div>
 							</React.Fragment>
-						))
+						))}
+						</>
 					) : (
-						<div className="col-span-4">No games scheduled for this event.</div>
+						<div className="text-gray-300 mt-4">No games scheduled for this event.</div>
 					)}
 				</div>
 			</div>

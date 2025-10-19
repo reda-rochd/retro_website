@@ -10,20 +10,26 @@ const SCORE_MODE_OPTIONS = [
 	{ value: 'aggregate', label: 'Aggregation' }
 ];
 
+const HOUR_OPTIONS = Array.from({ length: 24 }, (_, idx) => idx.toString().padStart(2, '0'));
 const HOUR_MS = 60 * 60 * 1000;
 
-function resolveDateLike(input, fallbackFactory) {
-	if (!input) return fallbackFactory();
-	const parsed = new Date(input);
-	if (Number.isNaN(parsed.getTime())) return fallbackFactory();
-	return parsed;
-}
+const pad2 = value => value.toString().padStart(2, '0');
 
-function toLocalDateTimeInputValue(value) {
-	const date = value ? new Date(value) : new Date();
-	if (Number.isNaN(date.getTime())) return '';
-	const pad = n => n.toString().padStart(2, '0');
-	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+const asDate = value => {
+	if (!value) return null;
+	const parsed = new Date(value);
+	return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const formatDateInputValue = date => `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+
+function combineLocalDateTime(dateValue, hourValue) {
+	if (!dateValue) return null;
+	const hour = Number.parseInt(hourValue, 10);
+	if (Number.isNaN(hour)) return null;
+	const iso = `${dateValue}T${pad2(hour)}:00`;
+	const composed = new Date(iso);
+	return Number.isNaN(composed.getTime()) ? null : composed;
 }
 
 function EventForm({ initialData = {}, onSave, onDelete }) {
@@ -31,13 +37,17 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 		initialData.games ? initialData.games.map(game => ({ ...game })) : []
 	);
 
-	const defaultStart = resolveDateLike(initialData.startAt, () => {
+	const defaultStart = asDate(initialData.startAt) ?? (() => {
 		const base = new Date();
 		base.setMinutes(0, 0, 0);
 		return base;
-	});
+	})();
+	const defaultEnd = asDate(initialData.endAt) ?? new Date(defaultStart.getTime() + HOUR_MS);
 
-	const defaultEnd = resolveDateLike(initialData.endAt, () => new Date(defaultStart.getTime() + HOUR_MS));
+	const startDateDefault = formatDateInputValue(defaultStart);
+	const startHourDefault = pad2(defaultStart.getHours());
+	const endDateDefault = formatDateInputValue(defaultEnd);
+	const endHourDefault = pad2(defaultEnd.getHours());
 
 	const handleAddGame = () => {
 		setGames([...games, { name: "", score: 0, score_mode: 'team-only' }]);
@@ -55,25 +65,15 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		const formEntries = new FormData(e.target);
-		const formData = Object.fromEntries(formEntries.entries());
+		const formEntries = Object.fromEntries(new FormData(e.target).entries());
+		const { startDate, startHour, endDate, endHour, ...rest } = formEntries;
 
-		const startValue = formData.startAt;
-		const endValue = formData.endAt;
-		const start = new Date(startValue);
-		let end = new Date(endValue);
+		const start = combineLocalDateTime(startDate, startHour);
+		const end = combineLocalDateTime(endDate, endHour);
 
-		if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+		if (!start || !end) {
 			window.alert('Please provide valid start and end times.');
 			return;
-		}
-
-		const sameDayInput = typeof startValue === 'string'
-			&& typeof endValue === 'string'
-			&& startValue.slice(0, 10) === endValue.slice(0, 10);
-
-		if (end < start && sameDayInput) {
-			end = new Date(end.getTime() + HOUR_MS * 24);
 		}
 
 		if (end <= start) {
@@ -88,7 +88,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 		}));
 
 		onSave({
-			...formData,
+			...rest,
 			startAt: start.toISOString(),
 			endAt: end.toISOString(),
 			games: sanitizedGames
@@ -109,27 +109,47 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 			<div className="grid gap-4 sm:grid-cols-2">
 				<label className="flex flex-col gap-2">
 					<span className="text-sm font-semibold">Starts at</span>
-					<input
-						type="datetime-local"
-						name="startAt"
-						step="60"
-						lang="en-GB"
-						defaultValue={toLocalDateTimeInputValue(defaultStart)}
-						required
-						className="w-full px-4 border-l border-gray-500"
-					/>
+					<div className="flex gap-2">
+						<input
+							type="date"
+							name="startDate"
+							defaultValue={startDateDefault}
+							required
+							className="w-full px-4 border-l border-gray-500"
+						/>
+						<select
+							name="startHour"
+							defaultValue={startHourDefault}
+							required
+							className="px-2 border-l border-gray-500 bg-secondary text-white"
+						>
+							{HOUR_OPTIONS.map(hour => (
+								<option key={hour} value={hour}>{hour}</option>
+							))}
+						</select>
+					</div>
 				</label>
 				<label className="flex flex-col gap-2">
 					<span className="text-sm font-semibold">Ends at</span>
-					<input
-						type="datetime-local"
-						name="endAt"
-						step="60"
-						lang="en-GB"
-						defaultValue={toLocalDateTimeInputValue(defaultEnd)}
-						required
-						className="w-full px-4 border-l border-gray-500"
-					/>
+					<div className="flex gap-2">
+						<input
+							type="date"
+							name="endDate"
+							defaultValue={endDateDefault}
+							required
+							className="w-full px-4 border-l border-gray-500"
+						/>
+						<select
+							name="endHour"
+							defaultValue={endHourDefault}
+							required
+							className="px-2 border-l border-gray-500 bg-secondary text-white"
+						>
+							{HOUR_OPTIONS.map(hour => (
+								<option key={hour} value={hour}>{hour}</option>
+							))}
+						</select>
+					</div>
 				</label>
 			</div>
 			<input

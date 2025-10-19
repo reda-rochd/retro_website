@@ -3,7 +3,6 @@ import Users from '../../models/Users.js';
 
 const VALID_SCORE_MODES = new Set(['team-only', 'aggregate', 'collective']);
 const SCORE_MODE_FALLBACK = 'team-only';
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 function normalizeGames(games = []) {
 	return games.map(rawGame => {
@@ -46,22 +45,6 @@ async function gamesWithLogin(games = []) {
 	return populated;
 }
 
-function extractDatePortion(value) {
-	if (typeof value === 'string') return value.slice(0, 10);
-	if (value instanceof Date) return value.toISOString().slice(0, 10);
-	return null;
-}
-
-function ensureEndFollowsStart(start, end, rawStart, rawEnd) {
-	if (end < start) {
-		const startDay = extractDatePortion(rawStart);
-		const endDay = extractDatePortion(rawEnd);
-		if (startDay && endDay && startDay === endDay) {
-			return new Date(end.getTime() + DAY_MS);
-		}
-	}
-	return end;
-}
 export default async function (fastify, opts) {
 	fastify.get('/', async () => {
 		const events = await Events.find().lean();
@@ -77,12 +60,11 @@ export default async function (fastify, opts) {
 		if (!startAt) return reply.status(400).send({ error: 'startAt is required' });
 		if (!endAt) return reply.status(400).send({ error: 'endAt is required' });
 		const start = new Date(startAt);
-		let end = new Date(endAt);
+		const end = new Date(endAt);
 		if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
 			return reply.status(400).send({ error: 'Invalid startAt or endAt value' });
 		}
-		end = ensureEndFollowsStart(start, end, startAt, endAt);
-		if (end <= start) {
+		if (end < start) {
 			return reply.status(400).send({ error: 'endAt must be after startAt' });
 		}
 		req.body.startAt = start;
@@ -102,16 +84,15 @@ export default async function (fastify, opts) {
 		if (!startAtCandidate) return reply.status(400).send({ error: 'startAt is required' });
 		if (!endAtCandidate) return reply.status(400).send({ error: 'endAt is required' });
 		const start = new Date(startAtCandidate);
-		let end = new Date(endAtCandidate);
+		const end = new Date(endAtCandidate);
 		if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
 			return reply.status(400).send({ error: 'Invalid startAt or endAt value' });
 		}
-		end = ensureEndFollowsStart(start, end, req.body.startAt ?? existing.startAt, req.body.endAt ?? existing.endAt);
-		if (end <= start) {
+		if (end < start) {
 			return reply.status(400).send({ error: 'endAt must be after startAt' });
 		}
-		if (req.body.startAt !== undefined) req.body.startAt = start;
-		if (req.body.endAt !== undefined) req.body.endAt = end;
+		if (req.body.startAt) req.body.startAt = start;
+		if (req.body.endAt) req.body.endAt = end;
 		const updated = await Events.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
 		if (!updated) return reply.status(404).send({ error: 'Event not found' });
 		const evObj = updated.toObject();

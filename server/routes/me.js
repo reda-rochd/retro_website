@@ -21,7 +21,8 @@ export default async function (fastify, opts) {
 
 			const eventsWithGmGames = await Events.find({
 				"games.game_master": user._id,
-				date: { $gte: startOfDay, $lte: endOfDay }
+				startAt: { $lte: endOfDay },
+				endAt: { $gte: startOfDay }
 			}).lean();
 			const gamemasterGames = eventsWithGmGames.map(event => ({
 				eventId: event._id,

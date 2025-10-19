@@ -35,7 +35,7 @@ export default function Leaderboard({ leaders, rank = true }) {
 						<span>
 							{
 								leader.role === 'leader' ? (
-									<span>LEADER</span>
+									<span>GUIDE</span>
 								) : (
 									<>
 										<span className="text-lg font-bold gradient-text mr-0.5">{leader.score}</span>
