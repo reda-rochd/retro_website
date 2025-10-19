@@ -110,9 +110,9 @@ export default function Timeline() {
 								day: 'numeric',
 							})}
 						</time>
-						<h3 className={e.isUpcoming && "select-none blur font-light" || ""}>{name}</h3>
-						<p className={e.isUpcoming && "select-none blur" || ""}>{description}</p>
-						{!e.isUpcoming && (<Link to={`/event/${encodeURIComponent(e.name)}`} className="text-sm italic underline mt-2 text-[var(--color-accent-flamingo-queen)]">Learn More</Link>)}
+						<h3 className={`mb-2 ${e.isUpcoming && "select-none blur font-light" || ""}`}>{name}</h3>
+						<p className={`mb-2 ${e.isUpcoming && "select-none blur" || ""}`}>{description}</p>
+						{!e.isUpcoming && (<Link to={`/event/${encodeURIComponent(e.name)}`} className="text-sm gradient-text">Learn More ➔</Link>)}
 						<span className="circle" aria-hidden="true"></span>
 					</div>
 				);

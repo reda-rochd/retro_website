@@ -1,7 +1,8 @@
 .timeline {
-	--timeline-baseline: 30px;
-	--timeline-amplitude: 30px;
+	--timeline-baseline: 25px;
+	--timeline-amplitude: 25px;
 	--timeline-padding-left: calc(var(--timeline-amplitude) * 2);
+	padding-inline: 20px !important;
 }
 
 .timeline-item {
@@ -71,33 +72,9 @@
 	stroke-width: 3;
 	stroke-linecap: round;
 	filter:
-	  drop-shadow(0 0 4px var(--color-accent-cerise-pink))
-	  drop-shadow(0 0 8px var(--color-accent-flamingo-queen));
+		drop-shadow(0 0 4px var(--color-accent-cerise-pink))
+		drop-shadow(0 0 8px var(--color-accent-flamingo-queen));
 	stroke-dasharray: var(--path-length);
 	stroke-dashoffset: var(--path-length);
 	transition: stroke-dashoffset 0.1s linear;
-}
-
-
-.timeline-item a {
-  position: relative;
-  display: inline-block;
-  text-decoration: none;
-}
-
-.timeline-item a::after {
-  content: '→';
-  position: absolute;
-  right: -1.2em;
-  top: calc(50% - 0.75em);
-  font-size: 1em;
-}
-
-.timeline-item a:hover::after {
-  animation: slideArrow 0.5s infinite alternate;
-}
-
-@keyframes slideArrow {
-  from { transform: translateX(0); }
-  to { transform: translateX(5px); }
 }
