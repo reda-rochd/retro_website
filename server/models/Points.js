@@ -12,6 +12,7 @@ const pointSchema = new Schema({
 }, { timestamps: true });
 
 pointSchema.index({ eventId: 1, gameId: 1, userId: 1 }, { unique: true });
+
 pointSchema.index(
 	{ eventId: 1, gameId: 1, teamId: 1 },
 	{ unique: true, partialFilterExpression: { scoreMode: 'team-only' } }

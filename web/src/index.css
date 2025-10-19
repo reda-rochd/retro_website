@@ -87,13 +87,6 @@ body {
 	font-size: 1.5em;
 	font-weight: 700;
 	text-shadow: 0 0 2rem rgba(255,255,255,0.20);
-	/* box-shadow: 0 20px 20px -20px color-mix(in srgb, var(--color-accent-cerise-pink) 15%, #fff 5%); */
-	/* padding-inline: 2rem; */
-	/* padding-bottom: 0; */
-	/* width: max-content; */
-	/* border-radius: 1rem; */
-	/* margin-bottom: 1.5rem; */
-	/* margin-inline: auto; */
 }
 
 .gradient-text {

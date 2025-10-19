@@ -2,7 +2,8 @@ import {Schema, model} from 'mongoose';
 
 const eventsSchema = new Schema({
 	name: {type: String, required: true},
-	date: {type: Date, required: true},
+	startAt: {type: Date, required: true},
+	endAt: {type: Date, required: true},
 	description: {type: String, required: true},
 	location: {type: String, required: true},
 	games: [{
@@ -14,6 +15,6 @@ const eventsSchema = new Schema({
 	createdAt: {type: Date, default: Date.now},
 });
 
-eventsSchema.index({ date: -1 });
+eventsSchema.index({ startAt: -1 });
 
 export default model('Events', eventsSchema);

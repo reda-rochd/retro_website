@@ -3,13 +3,7 @@ import Events from '../models/Events.js';
 import Teams from '../models/Teams.js';
 import Users from '../models/Users.js';
 
-const SCORE_MODES = {
-	TEAM_ONLY: 'team-only',
-	AGGREGATE: 'aggregate',
-	COLLECTIVE: 'collective'
-};
-
-const VALID_SCORE_MODES = new Set(Object.values(SCORE_MODES));
+const VALID_SCORE_MODES = new Set(['team-only', 'aggregate', 'collective']);
 
 export default async function (fastify, options) {
 	fastify.post('/', async (request, reply) => {
@@ -29,7 +23,7 @@ export default async function (fastify, options) {
 		const game = event.games?.id(gameId);
 		if (!game) return reply.status(404).send({ error: 'Game not found for this event' });
 
-		const scoreMode = game.score_mode || SCORE_MODES.TEAM_ONLY;
+		const scoreMode = game.score_mode || 'team-only';
 		if (!VALID_SCORE_MODES.has(scoreMode))
 			return reply.status(500).send({ error: 'Invalid score mode configuration' });
 
@@ -47,8 +41,8 @@ export default async function (fastify, options) {
 		let userAwarded = false;
 
 		switch (scoreMode) {
-			case SCORE_MODES.TEAM_ONLY: {
-				const alreadyAwarded = await Points.findOne({ eventId, gameId, teamId: team._id, scoreMode: SCORE_MODES.TEAM_ONLY });
+			case 'team-only': {
+				const alreadyAwarded = await Points.findOne({ eventId, gameId, teamId: team._id, scoreMode: 'team-only' });
 				if (alreadyAwarded)
 					return reply.status(409).send({
 						error: 'Points for this game have already been awarded to this team',
@@ -57,13 +51,13 @@ export default async function (fastify, options) {
 				teamAwarded = true;
 				break;
 			}
-			case SCORE_MODES.COLLECTIVE: {
-				const teamHit = await Points.findOne({ eventId, gameId, teamId: team._id, scoreMode: SCORE_MODES.COLLECTIVE, teamAwarded: true });
+			case 'collective': {
+				const teamHit = await Points.findOne({ eventId, gameId, teamId: team._id, scoreMode: 'collective', teamAwarded: true });
 				teamAwarded = !teamHit;
 				userAwarded = true;
 				break;
 			}
-			case SCORE_MODES.AGGREGATE: {
+			case 'aggregate': {
 				teamAwarded = true;
 				userAwarded = true;
 				break;

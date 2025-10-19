@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Section from "../../components/Section.jsx";
+import Section from "/src/components/Section.jsx";
 import api from '/src/api/client.js';
+import { formatDateRange } from '/src/utils/formatDateTime.js';
 import './Timeline.css';
 
 function makeFakeText(len = 3) {
@@ -104,11 +105,7 @@ export default function Timeline() {
 						className={`timeline-item`}	
 					>
 						<time>
-							{new Date(e.date).toLocaleDateString(undefined, {
-								year: 'numeric',
-								month: 'short',
-								day: 'numeric',
-							})}
+							{formatDateRange(e.startAt, e.endAt)}
 						</time>
 						<h3 className={`mb-2 ${e.isUpcoming && "select-none blur font-light" || ""}`}>{name}</h3>
 						<p className={`mb-2 ${e.isUpcoming && "select-none blur" || ""}`}>{description}</p>

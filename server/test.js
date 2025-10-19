@@ -57,8 +57,20 @@ async function testTeams() {
 }
 
 async function testEvents() {
-	const event1 = { name: 'Birthday Party', date: '2024-06-15', description: 'Fun celebration', location: '123 Party St' };
-	const event2 = { name: 'Team Meeting', date: '2024-06-20', description: 'Weekly sync', location: 'Office' };
+	const event1 = {
+		name: 'Birthday Party',
+		startAt: '2024-06-15T10:00:00.000Z',
+		endAt: '2024-06-15T12:00:00.000Z',
+		description: 'Fun celebration',
+		location: '123 Party St'
+	};
+	const event2 = {
+		name: 'Team Meeting',
+		startAt: '2024-06-20T09:00:00.000Z',
+		endAt: '2024-06-20T10:30:00.000Z',
+		description: 'Weekly sync',
+		location: 'Office'
+	};
 
 	const createEvent1 = await request('POST', '/api/events', event1);
 	assert.strictEqual(createEvent1.status, 200);

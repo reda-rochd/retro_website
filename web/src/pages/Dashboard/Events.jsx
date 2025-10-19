@@ -1,16 +1,46 @@
 import { useState, useEffect } from "react"
-import Modal from "../../components/Modal.jsx"
-import Form from "./Form.jsx"
+import Modal from "/src/components/Modal.jsx"
 import api from "/src/api/client.js"
+import { formatDateRange } from "/src/utils/formatDateTime.js"
 
+
+const SCORE_MODE_OPTIONS = [
+	{ value: 'team-only', label: 'Team Only' },
+	{ value: 'collective', label: 'Collective' },
+	{ value: 'aggregate', label: 'Aggregation' }
+];
+
+const HOUR_MS = 60 * 60 * 1000;
+
+function resolveDateLike(input, fallbackFactory) {
+	if (!input) return fallbackFactory();
+	const parsed = new Date(input);
+	if (Number.isNaN(parsed.getTime())) return fallbackFactory();
+	return parsed;
+}
+
+function toLocalDateTimeInputValue(value) {
+	const date = value ? new Date(value) : new Date();
+	if (Number.isNaN(date.getTime())) return '';
+	const pad = n => n.toString().padStart(2, '0');
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 function EventForm({ initialData = {}, onSave, onDelete }) {
 	const [games, setGames] = useState(() =>
 		initialData.games ? initialData.games.map(game => ({ ...game })) : []
 	);
 
+	const defaultStart = resolveDateLike(initialData.startAt, () => {
+		const base = new Date();
+		base.setMinutes(0, 0, 0);
+		return base;
+	});
+
+	const defaultEnd = resolveDateLike(initialData.endAt, () => new Date(defaultStart.getTime() + HOUR_MS));
+
 	const handleAddGame = () => {
-		setGames([...games, { name: "" }]);
+		setGames([...games, { name: "", score: 0, score_mode: 'team-only' }]);
 	};
 
 	const handleChangeGame = (index, field, value) => {
@@ -25,8 +55,44 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		const formData = Object.fromEntries(new FormData(e.target).entries());
-		onSave({ ...formData, games });
+		const formEntries = new FormData(e.target);
+		const formData = Object.fromEntries(formEntries.entries());
+
+		const startValue = formData.startAt;
+		const endValue = formData.endAt;
+		const start = new Date(startValue);
+		let end = new Date(endValue);
+
+		if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+			window.alert('Please provide valid start and end times.');
+			return;
+		}
+
+		const sameDayInput = typeof startValue === 'string'
+			&& typeof endValue === 'string'
+			&& startValue.slice(0, 10) === endValue.slice(0, 10);
+
+		if (end < start && sameDayInput) {
+			end = new Date(end.getTime() + HOUR_MS * 24);
+		}
+
+		if (end <= start) {
+			window.alert('The end time must be after the start time.');
+			return;
+		}
+
+		const sanitizedGames = games.map(game => ({
+			...game,
+			score: Number(game.score) || 0,
+			score_mode: game.score_mode || 'team-only'
+		}));
+
+		onSave({
+			...formData,
+			startAt: start.toISOString(),
+			endAt: end.toISOString(),
+			games: sanitizedGames
+		});
 	};
 
 	return (
@@ -40,17 +106,32 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 				required
 				className="w-full px-4 border-l border-gray-500"
 			/>
-			<input
-				type="date"
-				name="date"
-				defaultValue={
-					initialData.date
-						? new Date(initialData.date).toISOString().split('T')[0]
-						: new Date().toISOString().split('T')[0]
-				}
-				required
-				className="w-full px-4 border-l border-gray-500"
-			/>
+			<div className="grid gap-4 sm:grid-cols-2">
+				<label className="flex flex-col gap-2">
+					<span className="text-sm font-semibold">Starts at</span>
+					<input
+						type="datetime-local"
+						name="startAt"
+						step="60"
+						lang="en-GB"
+						defaultValue={toLocalDateTimeInputValue(defaultStart)}
+						required
+						className="w-full px-4 border-l border-gray-500"
+					/>
+				</label>
+				<label className="flex flex-col gap-2">
+					<span className="text-sm font-semibold">Ends at</span>
+					<input
+						type="datetime-local"
+						name="endAt"
+						step="60"
+						lang="en-GB"
+						defaultValue={toLocalDateTimeInputValue(defaultEnd)}
+						required
+						className="w-full px-4 border-l border-gray-500"
+					/>
+				</label>
+			</div>
 			<input
 				type="text"
 				name="location"
@@ -93,26 +174,25 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 						onChange={(e) => handleChangeGame(index, "game_master", e.target.value)}
 						placeholder="Game Master"
 						required
-						className="w-2/5 px-0 border-gray-500"
+						className="w-1/3 px-0 border-gray-500"
 					/>
 					<input
 						type="number"
-						value={game.score}
-						onChange={(e) => handleChangeGame(index, "score", Number(e.target.value))}
+						value={game.score ?? ''}
+						onChange={(e) => handleChangeGame(index, "score", e.target.value === "" ? "" : Number(e.target.value))}
 						placeholder="Score"
 						required
 						className="w-1/6 px-0 border-gray-500"
 					/>
-					<label className="flex items-center gap-1 text-sm text-gray-400 border-gray-500 cursor-pointer">
-						<input
-							type="checkbox"
-							checked={game.solo_game || false}
-							onChange={(e) => handleChangeGame(index, "solo_game", e.target.checked)}
-							className="w-4 h-4 rounded-full bg-white appearance-none checked:bg-blue-500 cursor-pointer"
-
-						/>
-						Solo?
-					</label>
+					<select
+						value={game.score_mode || 'team-only'}
+						onChange={(e) => handleChangeGame(index, "score_mode", e.target.value)}
+						className="px-1 py-1 text-sm bg-secondary text-gray-200"
+					>
+						{SCORE_MODE_OPTIONS.map(option => (
+							<option key={option.value} value={option.value}>{option.label}</option>
+						))}
+					</select>
 					<button
 						type="button"
 						onClick={() => handleDeleteGame(index)}
@@ -209,8 +289,8 @@ export default function Events() {
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7H3v12a2 2 0 002 2z" />
 							</svg>
-							<span className="font-bold">Date:</span>
-							<span>{new Date(event.date).toLocaleDateString()}</span>
+							<span className="font-bold">Schedule:</span>
+							<span>{formatDateRange(event.startAt, event.endAt)}</span>
 
 							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
 								<path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 12 17.657 7.343a8 8 0 10-11.314 11.314L12 13.414l5.657 5.657z" />
@@ -229,7 +309,7 @@ export default function Events() {
 						<ul className="ml-7">
 							{event.games?.map((game, i) => (
 								<li className="ml-4 list-disc" key={game._id}>
-								  {game.name} [{game.score} pts] (master: {game.game_master})
+								  {game.name} · {game.score} pts · {game.game_master} · {game.score_mode}
 								</li>
 							))}
 						</ul>

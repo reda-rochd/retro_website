@@ -4,7 +4,7 @@ import { forwardRef } from "react"
 export default function Section({ children, className = "", ...props }) {
 	return (
 		<section
-			className={`section neon-section min-h-[500px] ${className}`}
+			className={`section neon-section min-h-[300px] ${className}`}
 			{...props}
 		>
 			<span className="shine top-right"></span>
