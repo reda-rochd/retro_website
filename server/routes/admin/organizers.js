@@ -36,9 +36,10 @@ export default async function (fastify, opts) {
 		const normalizedCategory = normalizeText(category || '');
 		const normalizedRole = normalizeText(role || '');
 
-		if (!normalizedLogin || !normalizedCategory || !normalizedRole) {
-			return reply.status(400).send({ error: 'login, category and role are required' });
-		}
+		if (!normalizedLogin)
+			return reply.status(400).send({ error: 'Login is required' });
+		if (!normalizedCategory)
+			return reply.status(400).send({ error: 'Category is required' });
 
 		const user = await Users.findOne({ login: normalizedLogin })
 			.select('login first_name last_name avatar_url')

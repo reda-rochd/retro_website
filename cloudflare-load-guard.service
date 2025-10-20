@@ -1,0 +1,15 @@
+[Unit]
+Description=Cloudflare Load Guard
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env node /srv/1337play/server/scripts/load-guard.js
+WorkingDirectory=/srv/1337play/server/scripts/
+Restart=always
+RestartSec=5
+User=deploy
+Group=deploy
+
+[Install]
+WantedBy=multi-user.target

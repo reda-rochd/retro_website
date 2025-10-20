@@ -52,10 +52,10 @@ export default function Organizers() {
 			category: normalizeText(form.category),
 			role: normalizeText(form.role),
 		};
-		if (!payload.login || !payload.category || !payload.role) {
-			setError("All fields are required.");
-			return;
-		}
+		if (!payload.login)
+			return setError("Login is required.");
+		if (!payload.category)
+			return setError("Category is required.");
 		setSubmitting(true);
 		api.post("/admin/organizers", payload)
 			.then(res => {
