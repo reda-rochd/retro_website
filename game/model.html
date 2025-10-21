@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bmo model</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="modulepreload" href="bmoGame.js">
+  <link rel="preload" as="fetch" href="3D_models/bmo_fixed_textures_optimized.glb" type="model/gltf-binary">
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+10&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <canvas id="gameCanvas" hidden="true" width="465", height="350"></canvas>
+    <script src="bmoGame.js" type="module"></script>
+    <!-- <script type="module" src="model.js"></script> -->
+  </body>
+</html>
+
