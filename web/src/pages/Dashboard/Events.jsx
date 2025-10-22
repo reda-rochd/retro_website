@@ -106,7 +106,7 @@ function EventForm({ initialData = {}, onSave, onDelete }) {
 				required
 				className="w-full px-4 border-l border-gray-500"
 			/>
-			<div className="grid gap-4 sm:grid-cols-2">
+			<div className="flex flex-col gap-4">
 				<label className="flex flex-col gap-2">
 					<span className="text-sm font-semibold">Starts at</span>
 					<div className="flex gap-2">

@@ -62,7 +62,7 @@ export default function Profile() {
 				<p className="text-2xl">{user.name}</p>
 			</div>
 
-			{user.is_new_student && (
+			{ (
 			  <div className="flex items-center gap-8 justify-center">
 				{[
 				  { value: user.score, label: "My Score" },
@@ -121,7 +121,7 @@ export default function Profile() {
 				</div>
 			)}
 
-			{user.is_new_student && (
+			{(
 				<div className="flex flex-col items-center mt-2">
 					<h3 className="my-2">Identifier QR Code</h3>
 					<QRCode

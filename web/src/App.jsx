@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard/index.jsx'
 import Profile from './pages/Profile/index.jsx'
 import Team from './pages/Team/index.jsx'
 import Event from './pages/Event/index.jsx'
+import Game from './pages/Game/index.jsx'
 
 import Navbar from './components/Navbar.jsx'
 
@@ -42,6 +43,7 @@ function AppRoutes() {
 				<Routes location={location} key={location.pathname}>
 					<Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
 					<Route element={<ProtectedRoute />}>
+						<Route path="/game" element={<PageWrapper><Game /></PageWrapper>} />
 						<Route path="/event/:eventName" element={<PageWrapper><Event /></PageWrapper>} />
 						<Route path="/team/:teamName" element={<PageWrapper><Team /></PageWrapper>} />
 						<Route path="/leaderboard" element={<PageWrapper><Leaderboard /></PageWrapper>} />

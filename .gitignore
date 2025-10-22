@@ -65,6 +65,7 @@ out/
 # Nuxt.js build output
 .nuxt/
 dist/
+!game/dist/
 
 # Gatsby files
 .cache/
