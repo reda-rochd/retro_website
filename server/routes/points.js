@@ -66,6 +66,8 @@ export default async function (fastify, options) {
 				return reply.status(500).send({ error: 'Unsupported score mode' });
 		}
 
+		if (!user.is_new_student) teamAwarded = false;
+
 		try {
 			await Points.create({
 				eventId,
