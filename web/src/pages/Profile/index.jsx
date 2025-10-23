@@ -13,16 +13,42 @@ export default function Profile() {
 	const [modalData, setModalData] = useState(null)
 	const [res, setRes] = useState(null)
 
-	const handleScan = (eventId, gameId, scan) => {
-		const parts = scan.split("|")
-		if (parts.length !== 3) return false;
-		const userData = {
-			id: parts[0],
-			name: parts[1],
-			img: parts[2]
+	const handleScan = async (eventId, gameId, scan) => {
+		const isQRCode = scan.includes("|")
+		
+		if (isQRCode) {
+			const parts = scan.split("|")
+			if (parts.length !== 3) return false;
+			const userData = {
+				id: parts[0],
+				name: parts[1],
+				img: parts[2]
+			}
+			setModalData({ eventId, gameId, userData })
+			return true;
+		} else {
+			const login = scan.trim()
+			if (!login) return false
+			
+			try {
+				const response = await api.get(`/public/users/${login}`)
+				const userData = response.data
+				setModalData({ 
+					eventId, 
+					gameId, 
+					userData: {
+						id: userData._id,
+						name: userData.first_name + " " + userData.last_name,
+						img: userData.avatar_url.split("/users/")[1]
+					}
+				})
+				return true
+			} catch (error) {
+				setRes({ success: false, message: "User not found" })
+				setTimeout(() => setRes(null), 2000)
+				return false
+			}
 		}
-		setModalData({ eventId, gameId, userData })
-		return true;
 	}
 
 	const confirmAward = async () => {
@@ -124,23 +150,40 @@ export default function Profile() {
 			{(
 				<div className="flex flex-col items-center mt-2">
 					<h3 className="my-2">Identifier QR Code</h3>
-					<QRCode
-						value={
-							user._id + "|" +
-							user.first_name + " " + user.last_name + "|" +
-							user.avatar_url.split("/users/")[1]
-						}
-						size={256} bgColor="#fff" fgColor="#000" level="H"
-						className="p-4 bg-white rounded-2xl"
-					/>
+					<div style={{ 
+						mixBlendMode: 'normal', 
+						filter: 'none', 
+						isolation: 'isolate',
+						forcedColorAdjust: 'none',
+						WebkitPrintColorAdjust: 'exact',
+						printColorAdjust: 'exact'
+					}}>
+						<QRCode
+							value={
+								user._id + "|" +
+								user.first_name + " " + user.last_name + "|" +
+								user.avatar_url.split("/users/")[1]
+							}
+							size={256} 
+							bgColor="#ffffff" 
+							fgColor="#000000" 
+							level="H"
+							className="p-4 bg-white rounded-2xl"
+							style={{ display: 'block' }}
+						/>
+					</div>
 				</div>
 			)}
 
 		{modalData && (
 			<Modal onClose={closeModal} className="bg-primary p-4">
 				<div className="p-6 flex flex-col items-center gap-4 z-80">
-					<p>Award points to {modalData.userData.name}?</p>
-					<img src={`https://cdn.intra.42.fr/users/${modalData.userData.img}`} className="w-32 h-32 rounded-full"/>
+					<p>
+						Award points to {modalData.userData.name || 'this user'}?
+					</p>
+					{modalData.userData.img && (
+						<img src={`https://cdn.intra.42.fr/users/${modalData.userData.img}`} className="w-32 h-32 rounded-full"/>
+					)}
 					<button onClick={confirmAward} className="bg-secondary px-8 py-2 rounded-lg cursor-pointer">Award</button>
 					{res && <p className={res.success ? "text-green-500" : "text-red-500"}>{res.message}</p>}
 				</div>
