@@ -38,7 +38,23 @@ export default function Team() {
 			<p className="text-center text-2xl mb-2 font-semibold">
 				<span className="gradient-text">{teamData.score} pts</span>
 			</p>
-			<Leaderboard leaders={teamData.members} rank={false}/>
+			<Leaderboard
+				items={teamData.members}
+				rank={false}
+				getUrl={(m) => `https://profile-v3.intra.42.fr/users/${m.login}`}
+				getAvatarUrl={(m) => m.avatar_url}
+				getTitle={(m) => m.login}
+				getSubtitle={(m) => {
+					const full = `${m.first_name || ''} ${m.last_name || ''}`.trim();
+					return full || undefined;
+				}}
+				renderRight={(m) => (
+					<>
+						<span className="text-lg font-bold gradient-text mr-0.5">{m.score}</span>
+						<span className="text-xs">pts</span>
+					</>
+				)}
+			/>
 		</Section>
 	)
 }
