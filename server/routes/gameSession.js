@@ -4,9 +4,9 @@ import Users from '../models/Users.js';
 
 function computeScore(durationSec) {
 	const minSec = 30;
-	const maxSec = 180;
+	const maxSec = 100;
 	const bestPts = 350;
-	const worstPts = 5;
+	const worstPts = 50;
 	if (durationSec <= minSec) return bestPts;
 	if (durationSec >= maxSec) return worstPts;
 	const t = (durationSec - minSec) / (maxSec - minSec);
