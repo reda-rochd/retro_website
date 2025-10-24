@@ -48,12 +48,16 @@ export default function Team() {
 					const full = `${m.first_name || ''} ${m.last_name || ''}`.trim();
 					return full || undefined;
 				}}
-				renderRight={(m) => (
+				renderRight={(m) =>
+				  m.role === 'leader' ? (
+					<span>Guide</span>
+				  ) : (
 					<>
-						<span className="text-lg font-bold gradient-text mr-0.5">{m.score}</span>
-						<span className="text-xs">pts</span>
+					  <span className="text-lg font-bold gradient-text mr-0.5">{m.score}</span>
+					  <span className="text-xs">pts</span>
 					</>
-				)}
+				  )
+				}
 			/>
 		</Section>
 	)

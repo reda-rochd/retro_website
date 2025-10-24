@@ -5,16 +5,18 @@ export default function Game() {
 	const iframeRef = useRef(null)
 
 	useEffect(() => {
-		const prevOverflow = window.getComputedStyle(document.body).overflow ?? document.body.style.overflow
-		const prevPadding = document.body.style.padding ?? document.body.style.padding
-		document.body.style.overflow = 'hidden'
-		document.body.style.padding = '0'
-		return () => {
-			document.body.style.overflow = prevOverflow
-			document.body.style.padding = prevPadding
-		}
-	}, [])
+		const prevOverflow = document.body.style.overflow;
+		const children = Array.from(document.body.children);
+		const prevPaddings = children.map(el => el.style.padding);
 
+		document.body.style.overflow = 'hidden';
+		children.forEach(el => (el.style.padding = '0'));
+
+		return () => {
+			document.body.style.overflow = prevOverflow;
+			children.forEach((el, i) => (el.style.padding = prevPaddings[i]));
+		};
+	}, []);
 
 	useEffect(() => {
 		iframeRef.current?.focus()

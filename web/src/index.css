@@ -72,7 +72,8 @@ body {
 .section {
 	background-color: var(--color-primary);
 	width: var(--content-width);
-	padding: 2rem;
+	padding-block: 2rem;
+	padding-inline: clamp(.5ch, 5vw, 3ch);
 	margin-inline: auto;
 	border-radius: var(--radius);
 	/* position: relative; */

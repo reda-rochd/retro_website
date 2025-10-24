@@ -36,7 +36,7 @@ export default function Leaderboard({
 					<Wrapper
 						key={index}
 						{...wrapperProps}
-						className={`flex justify-between items-center bg-white/5 rounded-lg px-4 ${
+						className={`grid grid-cols-[1fr_auto] items-center bg-white/5 rounded-lg px-4 ${
 							url ? 'hover:bg-white/10 transition-colors cursor-pointer' : ''
 						}`}
 					>
