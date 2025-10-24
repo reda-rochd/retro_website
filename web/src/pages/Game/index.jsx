@@ -5,12 +5,13 @@ export default function Game() {
 	const iframeRef = useRef(null)
 
 	useEffect(() => {
-		const prev = window.getComputedStyle(document.body).overflow
-		const prevInline = document.body.style.overflow
+		const prevOverflow = window.getComputedStyle(document.body).overflow ?? document.body.style.overflow
+		const prevPadding = document.body.style.padding ?? document.body.style.padding
 		document.body.style.overflow = 'hidden'
-
+		document.body.style.padding = '0'
 		return () => {
-			document.body.style.overflow = prevInline || prev
+			document.body.style.overflow = prevOverflow
+			document.body.style.padding = prevPadding
 		}
 	}, [])
 
@@ -48,8 +49,6 @@ export default function Game() {
 					respond(true, res.data);
 				} else if (data.type === 'REQUEST_SUBMIT') {
 					const { token, victory = false } = data.payload || {};
-					// Do not forward client endTime; server records its own end time.
-					// Forward victory so server only awards points on wins.
 					const res = await api.post('/game-session/submit', { token, victory });
 					respond(true, res.data);
 				} else if (data.type === 'REQUEST_BEST') {
@@ -57,7 +56,6 @@ export default function Game() {
 					respond(true, res.data);
 				}
 			} catch (err) {
-				// Prefer the server's `error` field, then `message`, then fallback
 				const message = err?.response?.data?.error || err?.response?.data?.message || err.message || 'unknown';
 				respond(false, null, message);
 			}

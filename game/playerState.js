@@ -444,7 +444,7 @@ const swordOutState = (player) => {
     return {
         enter: () => {
             player.setAnimationId('sword_out');
-            player.shouldCombo = true;
+            player.shouldCombo = false;
         },
     
         update: () => {
@@ -461,6 +461,8 @@ const swordOutState = (player) => {
         },
 
         onKeyDown: (input) => {
+            if (input === 'space')
+                player.shouldCombo = true;
             if (input !== 'arrowright' && input !== 'arrowleft')
                 return ;
             player.direction = input === 'arrowright' ? 'right' : 'left';
@@ -496,14 +498,18 @@ const swordAttackState = (player) => {
         },
     
         onKeyUp: (input) => {
-            if (input === 'space')
+            if (input === 'space') {
                 player.shouldCombo = false;
+            }
             if (input === 'arrowright' || input === 'arrowleft')
                 player.xVelocity = 0;
         },
     
         onKeyDown: (input) =>
         {
+            if (input === 'space') {
+                player.shouldCombo = true;
+            }
             if (input !== 'arrowright' && input !== 'arrowleft')
                 return ;
             player.direction = input === 'arrowright' ? 'right' : 'left';
@@ -528,12 +534,18 @@ const swordInState = (player) => {
         },
 
         onKeyUp: (input) => {
+            if (input === 'space') {
+                player.shouldCombo = false;
+            }
             if (input !== 'arrowright' && input !== 'arrowleft')
                 return ;
             player.xVelocity = 0;
         },
 
         onKeyDown: (input) => {
+            if (input === 'space') {
+                player.shouldCombo = true;
+            }
             if (input !== 'arrowright' && input !== 'arrowleft')
                 return ;
             player.direction = input === 'arrowright' ? 'right' : 'left';

@@ -23,7 +23,7 @@ export function getButtonRefs() {
 	return { plusButton, redButton, blueButton, greenButton, screenMesh, bmoBody };
 }
 
-export function setupModel(modelData, setupHandlers) {
+export function setupModel(modelData) {
 	const { THREERef, renderer, model, gameTexture, camera, scene } = modelData;
 
 	plusButton = model.getObjectByName("plus_button");
@@ -43,11 +43,6 @@ export function setupModel(modelData, setupHandlers) {
 	// Configure screen texture and material
 	configureScreenTexture(THREERef, gameTexture);
 	configureScreenMaterial(THREERef, gameTexture);
-
-	// Enhance button materials
-	const { enhanceButtons } = setupHandlers;
-	if (enhanceButtons)
-		enhanceButtons({ three: THREERef, renderer, plus: plusButton, red: redButton, blue: blueButton, green: greenButton });
 
 	return { camera, scene };
 }
@@ -90,18 +85,19 @@ export function createUpdateButtonTransforms(isKeyDownFn) {
 }
 
 export function createButtonHandlers(callbacks) {
-	const { applyKey, triggerGameStart, restartGame, gameOver, gameStart } = callbacks;
+	const { applyKey, onButtonPress } = callbacks;
 
 	return {
 		plus_button: handleDPad,
-		Red_button: (_, pressed) => applyKey("space", pressed),
-		triangle_button: (_, pressed) => applyKey("keyg", pressed),
+		Red_button: handleRedButton,
+		triangle_button: handleBlueButton,
 		small_button: handleGreenButton
 	};
 
 	function handleDPad(intersection, pressed) {
 		if (!pressed) {
 			releaseDirectionalKeys();
+			if (typeof onButtonPress === 'function') onButtonPress('dpad', false);
 			return;
 		}
 		if (!intersection)
@@ -122,16 +118,30 @@ export function createButtonHandlers(callbacks) {
 		}
 		releaseDirectionalKeys(target);
 		applyKey(target, true);
+		if (typeof onButtonPress === 'function') onButtonPress('dpad', true, { direction: target });
 	}
 
-	function handleGreenButton(_, pressed) {
+	function handleGreenButton(intersection, pressed) {
+		// Visual feedback - simulate a key press for button animation
 		applyKey("keyr", pressed);
+
 		if (!pressed)
 			return;
-		if (gameOver())
-			restartGame();
-		else if (!gameStart())
-			triggerGameStart();
+
+		// Generic callback for button semantics
+		if (typeof onButtonPress === 'function') onButtonPress('green', true);
+	}
+
+	function handleRedButton(_, pressed) {
+		applyKey("space", pressed);
+		if (!pressed) return;
+		if (typeof onButtonPress === 'function') onButtonPress('red', true);
+	}
+
+	function handleBlueButton(_, pressed) {
+		applyKey("keyg", pressed);
+		if (!pressed) return;
+		if (typeof onButtonPress === 'function') onButtonPress('blue', true);
 	}
 
 	function releaseDirectionalKeys(except) {

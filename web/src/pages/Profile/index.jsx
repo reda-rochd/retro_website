@@ -27,7 +27,7 @@ export default function Profile() {
 			setModalData({ eventId, gameId, userData })
 			return true;
 		} else {
-			const login = scan.trim()
+			const login = scan.trim().toLowerCase()
 			if (!login) return false
 			
 			try {
@@ -39,7 +39,7 @@ export default function Profile() {
 					userData: {
 						id: userData._id,
 						name: userData.first_name + " " + userData.last_name,
-						img: userData.avatar_url.split("/users/")[1]
+						img: userData.avatar_url?.split("/users/")[1] || null
 					}
 				})
 				return true
@@ -162,7 +162,7 @@ export default function Profile() {
 							value={
 								user._id + "|" +
 								user.first_name + " " + user.last_name + "|" +
-								user.avatar_url.split("/users/")[1]
+								(user.avatar_url?.split("/users/")[1] || "")
 							}
 							size={256} 
 							bgColor="#ffffff" 

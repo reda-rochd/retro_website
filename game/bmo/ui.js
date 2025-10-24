@@ -22,73 +22,77 @@ export function createLoadingOverlay() {
 }
 
 export function showResultOverlay(result, onClose) {
-	const overlay = document.createElement('div');
-	Object.assign(overlay.style, {
-		position: 'fixed',
-		left: '50%',
-		top: '50%',
-		transform: 'translate(-50%,-50%)',
-		background: '#0b0b0b',
-		color: '#fff',
-		padding: '20px',
-		borderRadius: '8px',
-		zIndex: 9999,
-		textAlign: 'center',
-		fontFamily: '"Jersey 10", sans-serif'
-	});
+	return { result, onClose };
+}
+
+export function drawResultOnCanvas(ctx, result, width, height) {
+	// Dim the background
+	ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+	ctx.fillRect(0, 0, width, height);
+
+	const centerX = width / 2;
+	const centerY = height / 2;
+
+	// Determine if victory or loss
+	const isVictory = result.victory === true;
+
+	// Draw title
+	ctx.fillStyle = isVictory ? '#6fffe9' : '#ff6b6b';
+	ctx.textAlign = 'center';
+	ctx.font = `${width * 0.08}px "Jersey 10", sans-serif`;
+	ctx.fillText(isVictory ? 'Victory!' : 'Defeat!', centerX, centerY - 60);
+
+	// Draw score
+	ctx.fillStyle = '#fff';
+	ctx.font = `${width * 0.05}px "Jersey 10", sans-serif`;
+	ctx.fillText(`Score: ${result.score} pts`, centerX, centerY - 10);
+
+	// Draw time
 	const mins = Math.floor(result.durationSec / 60);
 	const secs = result.durationSec % 60;
-	overlay.innerHTML = `<div style="font-size:20px; margin-bottom:8px">You scored ${result.score} pts</div>` +
-		`<div style="font-size:14px; margin-bottom:8px">Time: ${mins}:${String(secs).padStart(2,'0')}</div>` +
-		`<div style="font-size:12px; margin-bottom:12px">${result.newBest ? 'New personal best! 🎉' : 'Not a new best'}</div>` +
-		`<button id="closeResultBtn" style="padding:8px 12px; font-size:14px">Close</button>`;
-	document.body.appendChild(overlay);
-	const button = document.getElementById('closeResultBtn');
-	const cleanup = () => {
-		if (overlay && overlay.parentNode)
-			overlay.parentNode.removeChild(overlay);
-		if (typeof onClose === 'function')
-			onClose();
-	};
-	button.addEventListener('click', cleanup, { once: true });
+	ctx.font = `${width * 0.04}px "Jersey 10", sans-serif`;
+	ctx.fillText(`Time: ${mins}:${String(secs).padStart(2, '0')}`, centerX, centerY + 20);
+
+	// Draw best status (only for victories)
+	if (isVictory) {
+		ctx.fillStyle = result.newBest ? '#6fffe9' : '#aaa';
+		ctx.font = `${width * 0.035}px "Jersey 10", sans-serif`;
+		ctx.fillText(result.newBest ? '🎉 New Personal Best!' : 'Not a new best', centerX, centerY + 50);
+	}
+
+	// Draw instruction
+	ctx.fillStyle = '#6fffe9';
+	ctx.font = `${width * 0.03}px "Jersey 10", sans-serif`;
+	ctx.fillText('Press GREEN to continue', centerX, centerY + 90);
 }
 
 export function showSubmitErrorOverlay(message, retryCallback, cancelCallback) {
-	const overlay = document.createElement('div');
-	Object.assign(overlay.style, {
-		position: 'fixed',
-		left: '50%',
-		top: '50%',
-		transform: 'translate(-50%,-50%)',
-		background: '#2b0b0b',
-		color: '#fff',
-		padding: '20px',
-		borderRadius: '8px',
-		zIndex: 9999,
-		textAlign: 'center',
-		fontFamily: '"Jersey 10", sans-serif'
-	});
-	overlay.innerHTML = `<div style="font-size:18px; margin-bottom:8px">Failed to submit score</div>` +
-		`<div style="font-size:12px; margin-bottom:12px">${String(message || 'Unknown error')}</div>` +
-		`<div style="display:flex; gap:8px; justify-content:center">` +
-		`<button id="retrySubmitBtn" style="padding:8px 12px; font-size:14px">Retry</button>` +
-		`<button id="cancelSubmitBtn" style="padding:8px 12px; font-size:14px">Cancel</button>` +
-		`</div>`;
-	document.body.appendChild(overlay);
-	const cleanup = () => {
-		if (overlay && overlay.parentNode)
-			overlay.parentNode.removeChild(overlay);
-	};
-	document.getElementById('retrySubmitBtn').addEventListener('click', async () => {
-		cleanup();
-		if (typeof retryCallback === 'function')
-			await retryCallback();
-	});
-	document.getElementById('cancelSubmitBtn').addEventListener('click', () => {
-		cleanup();
-		if (typeof cancelCallback === 'function')
-			cancelCallback();
-	});
+	return { message, retryCallback, cancelCallback };
 }
 
-export default { createLoadingOverlay, showResultOverlay, showSubmitErrorOverlay };
+export function drawErrorOnCanvas(ctx, message, width, height) {
+	// Dim the background
+	ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+	ctx.fillRect(0, 0, width, height);
+
+	const centerX = width / 2;
+	const centerY = height / 2;
+
+	// Draw title
+	ctx.fillStyle = '#ff6b6b';
+	ctx.textAlign = 'center';
+	ctx.font = `${width * 0.08}px "Jersey 10", sans-serif`;
+	ctx.fillText('Submission Failed', centerX, centerY - 40);
+
+	// Draw message
+	ctx.fillStyle = '#fff';
+	ctx.font = `${width * 0.04}px "Jersey 10", sans-serif`;
+	ctx.fillText(String(message || 'Unknown error'), centerX, centerY + 10);
+
+	// Draw instructions
+	ctx.fillStyle = '#6fffe9';
+	ctx.font = `${width * 0.03}px "Jersey 10", sans-serif`;
+	ctx.fillText('GREEN to Retry | RED to Cancel', centerX, centerY + 60);
+}
+
+export default { createLoadingOverlay, showResultOverlay, showSubmitErrorOverlay, drawResultOnCanvas, drawErrorOnCanvas };

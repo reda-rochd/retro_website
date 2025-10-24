@@ -6,7 +6,7 @@ import { initThree, fitCameraToObject, setFrameCallback } from "./bmo/threejs.js
 import * as Keys from "./bmo/keys.js";
 import * as Touch from "./bmo/touch.js";
 import * as Session from "./bmo/session.js";
-import { createLoadingOverlay, showResultOverlay, showSubmitErrorOverlay } from "./bmo/ui.js";
+import { createLoadingOverlay, showResultOverlay, showSubmitErrorOverlay, drawResultOnCanvas, drawErrorOnCanvas } from "./bmo/ui.js";
 import {
 	setupModel,
 	createUpdateButtonTransforms,
@@ -25,7 +25,7 @@ const height = canvas.height;
 const THREE_MODULE_URL = "https://unpkg.com/three@0.168.0/build/three.module.js?module";
 const GLTF_LOADER_URL = "https://unpkg.com/three@0.168.0/examples/jsm/loaders/GLTFLoader.js?module";
 const DRACO_LOADER_URL = "https://unpkg.com/three@0.168.0/examples/jsm/loaders/DRACOLoader.js?module";
-const MODEL_PATH = "assets/BMO.glb";
+const MODEL_PATH = "/game/assets/BMO.glb";
 
 const FPS = 24;
 const FIXED_DT = 1 / FPS;
@@ -51,6 +51,13 @@ let bestSession = null;
 let loadingOverlay = null;
 let threeBootstrapped = false;
 
+// Result screen state
+let resultScreen = null;
+let errorScreen = null;
+let resultScreenWaitingForInput = false;
+let errorScreenWaitingForInput = false;
+let lastVictoryStatus = false;
+
 const keyState = Object.create(null);
 
 Keys.initKeys();
@@ -69,7 +76,92 @@ async function startGame() {
 	requestAnimationFrame(gameLoop);
 }
 
+function handleGreenPress() {
+	// If on result screen, restart
+	if (resultScreenWaitingForInput) {
+		resultScreenWaitingForInput = false;
+		resultScreen = null;
+		restartGame();
+		return true;
+	}
+
+	// If on error screen, retry
+	if (errorScreenWaitingForInput) {
+		errorScreenWaitingForInput = false;
+		retrySubmission(lastVictoryStatus);
+		return true;
+	}
+
+	// If during gameplay, restart
+	if (gameStart && !gameOver) {
+		restartGame();
+		return true;
+	}
+
+	// If at start screen, start the game
+	if (!gameStart && !gameOver) {
+		triggerGameStart();
+		return true;
+	}
+
+	return false;
+}
+
+function handleRedPress() {
+	// Support "RED to Cancel" on error screen
+	if (errorScreenWaitingForInput) {
+		errorScreenWaitingForInput = false;
+		errorScreen = null;
+		restartGame();
+		return true;
+	}
+	return false;
+}
+
+function handleButtonPress(name, pressed, extra) {
+	// Only process on press down, releases are for visual only
+	if (!pressed) return false;
+	switch (name) {
+	case 'green':
+		return handleGreenPress();
+	case 'red':
+		return handleRedPress();
+	default:
+		return false;
+	}
+}
+
 function onKeyDown(code) {
+	const lowerCode = code.toLowerCase();
+    
+	// Handle green button (keyr) - use shared handler so visual button matches behavior
+	if (lowerCode === 'keyr') {
+		if (handleGreenPress())
+			return;
+	}
+	
+	// Handle result screen input for other buttons
+	if (resultScreenWaitingForInput) {
+		if (lowerCode === 'keya') {
+			resultScreenWaitingForInput = false;
+			resultScreen = null;
+			restartGame();
+			return;
+		}
+	}
+
+	// Handle error screen input for red button
+	if (errorScreenWaitingForInput) {
+		if (lowerCode === 'keyb') {
+			// Cancel
+			errorScreenWaitingForInput = false;
+			errorScreen = null;
+			restartGame();
+			return;
+		}
+	}
+
+	// Normal key handling
 	applyKey(code, true);
 	if (!gameStart && !gameOver)
 		triggerGameStart();
@@ -192,12 +284,27 @@ function blackScreenDraw(delta) {
 }
 
 function gameUpdate(deltaTime) {
-	if (boss.isCalm && !gameOver) {
+	player.update(deltaTime);
+	boss.update(deltaTime, player);
+	
+	// Check victory AFTER updates to ensure we have the latest state
+	if (boss.isCalm && !gameOver && !player.isDead) {
 		victoryMessage();
 		return;
 	}
-	player.update(deltaTime);
-	boss.update(deltaTime, player);
+	
+	// Check for held action keys
+	if (keyState['space'] && (player.state === 'idle' || player.state === 'swordOut' || player.state === 'swordAttack' || player.state === 'swordIn')) {
+		if (player.state === 'idle') {
+			player.setState('swordOut');
+		}
+	}
+	
+	if (keyState['keyg'] && (player.state === 'idle' || player.state === 'shieldOut' || player.state === 'shieldWalk' || player.state === 'shieldIn')) {
+		if (player.state === 'idle') {
+			player.setState('shieldOut');
+		}
+	}
 }
 
 function gameDraw() {
@@ -257,14 +364,48 @@ function gameLoop(timestamp) {
 	requestAnimationFrame(gameLoop);
 }
 
+function resultScreenUpdate() {
+	// No update needed, just wait for input
+}
+
+function resultScreenDraw() {
+	drawBackground();
+	drawHpBar();
+	boss.drawHpBar(ctx);
+	if (boss.isAttacking) {
+		player.draw(ctx, assets);
+		boss.draw(ctx, assets);
+	} else {
+		boss.draw(ctx, assets);
+		player.draw(ctx, assets);
+	}
+	if (resultScreen) {
+		drawResultOnCanvas(ctx, resultScreen.result, width, height);
+	}
+}
+
+function errorScreenUpdate() {
+	// No update needed, just wait for input
+}
+
+function errorScreenDraw() {
+	drawBackground();
+	drawHpBar();
+	boss.drawHpBar(ctx);
+	if (boss.isAttacking) {
+		player.draw(ctx, assets);
+		boss.draw(ctx, assets);
+	} else {
+		boss.draw(ctx, assets);
+		player.draw(ctx, assets);
+	}
+	if (errorScreen) {
+		drawErrorOnCanvas(ctx, errorScreen.message, width, height);
+	}
+}
+
 function endGame() {
 	releaseAllKeys();
-	ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-	ctx.fillRect(0, 0, width, height);
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.font = `${width * 0.12}px "Jersey 10", sans-serif`;
-	ctx.fillText("Game Over", width / 2, height / 2);
 	gameStart = false;
 	gameOver = true;
 	handleSubmission(false);
@@ -288,28 +429,60 @@ function victoryMessage() {
 }
 
 async function handleSubmission(victory) {
+	lastVictoryStatus = victory;
 	try {
 		const result = await Session.submitIfNeeded({ victory });
 		if (result) {
 			bestSession = Session.getBestSession() || result;
-			showResultOverlay(result, restartGame);
+			// Add victory flag to result so UI knows if it's a win or loss
+			result.victory = victory;
+			resultScreen = { result, onClose: restartGame };
+			resultScreenWaitingForInput = true;
+			update = resultScreenUpdate;
+			draw = resultScreenDraw;
 			return;
 		}
 	} catch (err) {
 		console.warn("submitIfNeeded error", err);
 	}
-	showSubmitErrorOverlay("Submission failed or timed out", async () => {
+	
+	// Show error screen and wait for input
+	errorScreen = { 
+		message: "Submission failed or timed out",
+		isRetrying: false
+	};
+	errorScreenWaitingForInput = true;
+	update = errorScreenUpdate;
+	draw = errorScreenDraw;
+}
+
+async function retrySubmission(victory) {
+	try {
 		const retry = await Session.submitIfNeeded({ victory });
 		if (retry) {
 			bestSession = Session.getBestSession() || retry;
-			showResultOverlay(retry, restartGame);
+			retry.victory = victory;
+			resultScreen = { result: retry, onClose: restartGame };
+			resultScreenWaitingForInput = true;
+			update = resultScreenUpdate;
+			draw = resultScreenDraw;
+			return;
 		}
-	}, restartGame);
+	} catch (err) {
+		console.warn("Retry submission error", err);
+	}
+	
+	// Show error again if retry failed
+	errorScreen = { 
+		message: "Retry failed. Please try again.",
+		isRetrying: true
+	};
+	errorScreenWaitingForInput = true;
+	update = errorScreenUpdate;
+	draw = errorScreenDraw;
 }
 
 function restartGame() {
-	if (gameStart)
-		return;
 	releaseAllKeys();
 	alpha = 0;
 	fadeStep = 0.05;
@@ -381,15 +554,12 @@ function updateLoadingOverlay(xhr) {
 }
 
 function setupModelCallback(modelData) {
-	setupModel(modelData, { enhanceButtons });
+	setupModel(modelData);
 	const { bmoBody } = getButtonRefs();
 	Touch.initTouch({ scene: modelData.scene, camera: modelData.camera, three: modelData.THREERef });
 	const buttonHandlers = createButtonHandlers({
 		applyKey,
-		triggerGameStart,
-		restartGame,
-		gameOver: () => gameOver,
-		gameStart: () => gameStart
+		onButtonPress: handleButtonPress
 	});
 	Touch.setHandlers(buttonHandlers);
 	fitCameraToObject(bmoBody);

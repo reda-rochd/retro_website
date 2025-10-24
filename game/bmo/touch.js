@@ -4,6 +4,7 @@ let mouse = null;
 let sceneRef = null;
 let cameraRef = null;
 let handlers = {};
+let pressedButtons = new Set(); // Track which buttons are currently pressed
 
 export function initTouch({ scene, camera, three }) {
   if (!three) return;
@@ -23,6 +24,7 @@ export function disposeTouch() {
   window.removeEventListener('mouseup', onPointerUp);
   window.removeEventListener('touchend', onPointerUp);
   raycaster = null; mouse = null; sceneRef = null; cameraRef = null; handlers = {};
+  pressedButtons.clear();
 }
 
 export function setHandlers(h) { handlers = h || {}; }
@@ -43,15 +45,23 @@ function getIntersect(event) {
 
 function onPointerDown(e) {
   const inter = getIntersect(e);
-  if (inter) handlers[inter.object.name]?.(inter, true);
+  if (inter) {
+    pressedButtons.add(inter.object.name);
+    handlers[inter.object.name]?.(inter, true);
+  }
 }
 
 function onPointerUp(e) {
   const inter = getIntersect(e);
-  if (inter) handlers[inter.object.name]?.(inter, false);
-  else {
-    // release all
-    for (const k in handlers) handlers[k]?.(null, false);
+  if (inter && pressedButtons.has(inter.object.name)) {
+    pressedButtons.delete(inter.object.name);
+    handlers[inter.object.name]?.(inter, false);
+  } else {
+    // If we lifted off but not on a button, release all currently pressed buttons
+    for (const buttonName of pressedButtons) {
+      handlers[buttonName]?.(null, false);
+    }
+    pressedButtons.clear();
   }
 }
 
