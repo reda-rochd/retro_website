@@ -3,9 +3,9 @@ import GameSession from '../models/GameSession.js';
 import Users from '../models/Users.js';
 
 function computeScore(durationSec) {
-	const minSec = 50;
+	const minSec = 30;
 	const maxSec = 180;
-	const bestPts = 100;
+	const bestPts = 350;
 	const worstPts = 5;
 	if (durationSec <= minSec) return bestPts;
 	if (durationSec >= maxSec) return worstPts;

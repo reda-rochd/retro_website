@@ -1,6 +1,15 @@
 import BlobShape from './BlobShape.jsx';
 import { Link } from 'react-router-dom';
 
+function formatDuration(seconds) {
+	if (typeof seconds !== 'number' || !isFinite(seconds) || seconds < 0) return null;
+	const m = Math.floor(seconds / 60);
+	const s = seconds % 60;
+	const mm = String(m);
+	const ss = String(s).padStart(2, '0');
+	return `${mm}:${ss}`;
+}
+
 export default function Leaderboard({ leaders, rank = true }) {
 	return (
 		<div className="flex flex-col gap-6">
@@ -32,7 +41,7 @@ export default function Leaderboard({ leaders, rank = true }) {
 							)}
 							<h3 className="text-base font-medium">{leader?.login || leader?.name}</h3>
 						</div>
-						<span>
+						<span className="flex items-baseline gap-2">
 							{
 								leader.role === 'leader' ? (
 									<span>GUIDE</span>
@@ -43,6 +52,9 @@ export default function Leaderboard({ leaders, rank = true }) {
 									</>
 								)
 							}
+							{typeof leader.durationSec === 'number' && (
+								<span className="text-xs text-white/70">{formatDuration(leader.durationSec)}</span>
+							)}
 						</span>
 					</Wrapper>
 				);

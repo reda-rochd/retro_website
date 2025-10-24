@@ -6,11 +6,12 @@ import api from '/src/api/client.js'
 
 export default function Leaderboard() {
 	const [activeTab, setActiveTab] = useState('teams')
-	const [data, setData] = useState({ teams: [], individuals: [] })
+	const [data, setData] = useState({ teams: [], individuals: [], game: [] })
 
 	useEffect(() => {
 		api.get('/leaderboard').then(res => {
-			const { teams, individuals } = res.data
+			const { teams, individuals, game = [] } = res.data
+			// Compute team avatar as top member avatar
 			const topAvatars = {}
 			for (const user of individuals) {
 				if (!user.team) continue
@@ -23,8 +24,9 @@ export default function Leaderboard() {
 
 			teams.map(team => team.url = `/team/${encodeURIComponent(team.name)}`)
 			individuals.map(user => user.url = `https://profile-v3.intra.42.fr/users/${user.login}`)
+			game.map(entry => entry.url = `https://profile-v3.intra.42.fr/users/${entry.login}`)
 
-			setData({ teams, individuals })
+			setData({ teams, individuals, game })
 		}).catch(console.error)
 	}, [])
 
@@ -42,6 +44,12 @@ export default function Leaderboard() {
 					onClick={() => setActiveTab('individuals')}
 				>
 					Individuals
+				</button>
+				<button
+					className={`${activeTab === 'game' ? 'active' : ''} neon-tab`}
+					onClick={() => setActiveTab('game')}
+				>
+					Game
 				</button>
 			</div>
 
