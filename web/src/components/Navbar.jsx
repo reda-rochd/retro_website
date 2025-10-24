@@ -1,17 +1,26 @@
 import {Link} from 'react-router-dom'
 import Logo from '../assets/logo.svg'
+import GameIcon from '../assets/game.svg'
 
 export default function Navbar() {
 	return (
 		<section className="absolute top-0 left-0 right-0 text-white z-100 w-[var(--content-width)] mx-auto">
-			<div className="">
 				<Link to="/" className="absolute -top-1 left-0">
 					<img src={Logo} alt="Logo" className="w-20 h-20" />
 				</Link>
-				<div className="absolute top-6 right-6 flex gap-6 items-center">
-					<Link to="/leaderboard" className="inline-flex gap-2 text-sm"><svg className="w-5 h-5 fill-current"xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M353.8 118.1L330.2 70.3C326.3 62 314.1 61.7 309.8 70.3L286.2 118.1L233.9 125.6C224.6 127 220.6 138.5 227.5 145.4L265.5 182.4L256.5 234.5C255.1 243.8 264.7 251 273.3 246.7L320.2 221.9L366.8 246.3C375.4 250.6 385.1 243.4 383.6 234.1L374.6 182L412.6 145.4C419.4 138.6 415.5 127.1 406.2 125.6L353.9 118.1zM288 320C261.5 320 240 341.5 240 368L240 528C240 554.5 261.5 576 288 576L352 576C378.5 576 400 554.5 400 528L400 368C400 341.5 378.5 320 352 320L288 320zM80 384C53.5 384 32 405.5 32 432L32 528C32 554.5 53.5 576 80 576L144 576C170.5 576 192 554.5 192 528L192 432C192 405.5 170.5 384 144 384L80 384zM448 496L448 528C448 554.5 469.5 576 496 576L560 576C586.5 576 608 554.5 608 528L608 496C608 469.5 586.5 448 560 448L496 448C469.5 448 448 469.5 448 496z"/></svg> Leaderboard</Link>
-					<Link to="/profile" className="inline-flex gap-2 text-sm"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-5 h-5 fill-current"><path d="M320 320a128 128 0 1 0 0-256 128 128 0 0 0 0 256zm0 64c-106 0-192 70-192 156 0 28 26 52 58 52h268c32 0 58-24 58-52 0-86-86-156-192-156z"/></svg> Profile</Link>
-				</div>
+				<div className="absolute top-6 right-6 flex items-center gap-4 sm:gap-8">
+					<Link to="/game" aria-label="Game" className="inline-flex items-center gap-2 text-sm">
+						<img src={GameIcon} alt="" aria-hidden="true" className="w-5 h-5" />
+						<span className="hidden sm:inline">Game</span>
+					</Link>
+					<Link to="/leaderboard" aria-label="Leaderboard" className="inline-flex items-center gap-2 text-sm">
+						<svg className="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M353.8 118.1L330.2 70.3C326.3 62 314.1 61.7 309.8 70.3L286.2 118.1L233.9 125.6C224.6 127 220.6 138.5 227.5 145.4L265.5 182.4L256.5 234.5C255.1 243.8 264.7 251 273.3 246.7L320.2 221.9L366.8 246.3C375.4 250.6 385.1 243.4 383.6 234.1L374.6 182L412.6 145.4C419.4 138.6 415.5 127.1 406.2 125.6L353.9 118.1zM288 320C261.5 320 240 341.5 240 368L240 528C240 554.5 261.5 576 288 576L352 576C378.5 576 400 554.5 400 528L400 368C400 341.5 378.5 320 352 320L288 320zM80 384C53.5 384 32 405.5 32 432L32 528C32 554.5 53.5 576 80 576L144 576C170.5 576 192 554.5 192 528L192 432C192 405.5 170.5 384 144 384L80 384zM448 496L448 528C448 554.5 469.5 576 496 576L560 576C586.5 576 608 554.5 608 528L608 496C608 469.5 586.5 448 560 448L496 448C469.5 448 448 469.5 448 496z"/></svg>
+						<span className="hidden sm:inline">Leaderboard</span>
+					</Link>
+					<Link to="/profile" aria-label="Profile" className="inline-flex items-center gap-2 text-sm">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" className="w-5 h-5 fill-current"><path d="M320 320a128 128 0 1 0 0-256 128 128 0 0 0 0 256zm0 64c-106 0-192 70-192 156 0 28 26 52 58 52h268c32 0 58-24 58-52 0-86-86-156-192-156z"/></svg>
+						<span className="hidden sm:inline">Profile</span>
+					</Link>
 			</div>
 		</section>
 	);

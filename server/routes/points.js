@@ -23,6 +23,24 @@ export default async function (fastify, options) {
 		const game = event.games?.id(gameId);
 		if (!game) return reply.status(404).send({ error: 'Game not found for this event' });
 
+		const normalizeName = (n) => (typeof n === 'string' ? n.trim().toLowerCase() : '');
+		const targetName = normalizeName(game.name);
+		if (targetName) {
+			const userEventAwards = await Points.find({ eventId, userId }).select('gameId').lean();
+			if (Array.isArray(userEventAwards) && userEventAwards.length > 0) {
+				const awardedGameIds = new Set(userEventAwards.map(p => String(p.gameId)));
+				const duplicateNameAlreadyAwarded = (event.games || []).some(g =>
+					awardedGameIds.has(String(g._id)) && normalizeName(g.name) === targetName
+				);
+				if (duplicateNameAlreadyAwarded) {
+					return reply.status(409).send({
+						success: false,
+						error: 'User has already been awarded for a game with the same name in this event'
+					});
+				}
+			}
+		}
+
 		const scoreMode = game.score_mode || 'team-only';
 		if (!VALID_SCORE_MODES.has(scoreMode))
 			return reply.status(500).send({ error: 'Invalid score mode configuration' });

@@ -22,7 +22,7 @@ export default async function leaderboard(fastify, opts) {
 			{},
 			{ score: 1, durationSec: 1, userId: 1, _id: 0 }
 		)
-		.sort({ score: -1 })
+		.sort({ score: -1, durationSec: 1 })
 		.populate({ path: 'userId', select: 'login avatar_url first_name last_name', model: 'Users' })
 		.lean();
 

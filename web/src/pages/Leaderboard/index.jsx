@@ -50,7 +50,7 @@ export default function Leaderboard() {
 			getTitle: (team) => team.name,
 			renderRight: (team) => (
 				<>
-					<span className="text-lg font-bold gradient-text mr-0.5">{team.score}</span>
+					<span className="text-lg font-bold gradient-text mr-0.2">{team.score}</span>
 					<span className="text-xs">pts</span>
 				</>
 			),
@@ -66,7 +66,7 @@ export default function Leaderboard() {
 			},
 			renderRight: (user) => (
 				<>
-					<span className="text-lg font-bold gradient-text mr-0.5">{user.score}</span>
+					<span className="text-lg font-bold gradient-text mr-0.2">{user.score}</span>
 					<span className="text-xs">pts</span>
 				</>
 			),
@@ -83,9 +83,26 @@ export default function Leaderboard() {
 			renderRight: (entry) => (
 				<>
 					{typeof entry.durationSec === 'number' && (
-						<span className="text-xs mr-1 text-white">{formatDuration(entry.durationSec)}</span>
+						<span className="flex items-center text-xs text-white">
+							<svg
+								className="w-3 h-3 mr-1 opacity-80"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								aria-hidden="true"
+								focusable="false"
+							>
+								<circle cx="12" cy="12" r="9" />
+								<path d="M12 7v5l3 3" />
+							</svg>
+							{formatDuration(entry.durationSec)}
+						</span>
 					)}
-					<span className="text-lg font-bold gradient-text mr-0.5">{entry.score}</span>
+					<span>∙</span>
+					<span className="text-lg font-bold gradient-text mr-0.2">{entry.score}</span>
 					<span className="text-xs">pts</span>
 				</>
 			),
@@ -107,12 +124,12 @@ export default function Leaderboard() {
 				>
 					Individuals
 				</button>
-				{/* <button */}
-				{/* 	className={`${activeTab === 'game' ? 'active' : ''} neon-tab`} */}
-				{/* 	onClick={() => setActiveTab('game')} */}
-				{/* > */}
-				{/* 	Game */}
-				{/* </button> */}
+				<button
+					className={`${activeTab === 'game' ? 'active' : ''} neon-tab`}
+					onClick={() => setActiveTab('game')}
+				>
+					Game
+				</button>
 			</div>
 
 			<AnimatePresence mode="wait">
