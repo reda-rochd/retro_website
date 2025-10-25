@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import api from '../../api/client'
 
 export default function Game() {
 	const iframeRef = useRef(null)
+	const [showIntro, setShowIntro] = useState(true)
 
 	useEffect(() => {
 		const prevOverflow = document.body.style.overflow;
@@ -68,14 +69,44 @@ export default function Game() {
 	}, []);
 
 	return (
-		<div className="w-screen h-screen">
+		<div className="w-screen h-screen relative">
 			<iframe
 				ref={iframeRef}
 				title="Retro game"
 				src="/game/model.html"
-		className="w-full h-full border-0"
+				className="w-full h-full border-0"
 				sandbox="allow-scripts allow-same-origin"
 			/>
+			{showIntro && (
+				<div
+					className="absolute inset-0 z-50 flex items-center justify-center bg-black/90"
+					onClick={() => {
+						setShowIntro(false);
+						setTimeout(() => iframeRef.current?.focus(), 0);
+					}}
+					role="button"
+					aria-label="Tap to skip intro"
+				>
+					<video
+						className="max-w-full max-h-full"
+						src="/game/assets/intro.webm"
+						autoPlay
+						muted
+						playsInline
+						onEnded={() => {
+							setShowIntro(false);
+							setTimeout(() => iframeRef.current?.focus(), 0);
+						}}
+						onError={() => {
+							setShowIntro(false);
+							setTimeout(() => iframeRef.current?.focus(), 0);
+						}}
+					/>
+					<div className="absolute bottom-4 right-4 text-white/70 text-sm select-none text-center text-shadow-sm">
+						Tap to skip
+					</div>
+				</div>
+			)}
 		</div>
 	)
 }
