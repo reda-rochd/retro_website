@@ -8,6 +8,7 @@ export default function Game() {
 	const [showSkip, setShowSkip] = useState(false)
 	const videoRef = useRef(null)
 	const skipTimerRef = useRef(null)
+	const [fadingOut, setFadingOut] = useState(false)
 
 	useEffect(() => {
 		const prevOverflow = document.body.style.overflow;
@@ -46,7 +47,7 @@ export default function Game() {
 			const sourceWindow = event.source;
 			const respond = (success, payload = null, error = null) => {
 				const msg = { type: 'RESPONSE', responseTo: data.requestId, success, payload, error };
-				try { sourceWindow.postMessage(msg, event.origin); } catch (err) { /* ignore */ }
+				try { sourceWindow.postMessage(msg, event.origin); } catch (err) {console.log(err);}
 			};
 
 			try {
@@ -106,11 +107,14 @@ export default function Game() {
 		}
 		try {
 			videoRef.current?.pause()
-		} catch {}
-		setShowIntro(false)
-		setNeedsTapToStart(true)
-		setShowSkip(false)
-		setTimeout(() => iframeRef.current?.focus(), 0)
+		} catch(e) {console.log(e);}
+
+		setFadingOut(true)
+		setTimeout(() => {
+			setShowIntro(false)
+			setFadingOut(false)
+			iframeRef.current?.focus()
+		}, 1000)
 	}
 
 	return (
@@ -123,7 +127,9 @@ export default function Game() {
 				sandbox="allow-scripts allow-same-origin"
 			/>
 			{showIntro && (
-				<div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 overflow-hidden">
+				<div
+					className={`absolute inset-0 z-50 flex items-center justify-center bg-black/90 overflow-hidden transition-opacity transition-[backdrop-filter] duration-1000 ${fadingOut ? 'opacity-0 backdrop-blur-md' : 'opacity-100 backdrop-blur-0'}`}
+				>
 					<video
 						ref={videoRef}
 						className="absolute inset-0 h-full object-cover m-auto"
@@ -161,3 +167,4 @@ export default function Game() {
 		</div>
 	)
 }
+
