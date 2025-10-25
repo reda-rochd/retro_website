@@ -4,6 +4,10 @@ import api from '../../api/client'
 export default function Game() {
 	const iframeRef = useRef(null)
 	const [showIntro, setShowIntro] = useState(true)
+	const [needsTapToStart, setNeedsTapToStart] = useState(true)
+	const [showSkip, setShowSkip] = useState(false)
+	const videoRef = useRef(null)
+	const skipTimerRef = useRef(null)
 
 	useEffect(() => {
 		const prevOverflow = document.body.style.overflow;
@@ -12,7 +16,6 @@ export default function Game() {
 
 		document.body.style.overflow = 'hidden';
 		children.forEach(el => (el.style.padding = '0'));
-
 		return () => {
 			document.body.style.overflow = prevOverflow;
 			children.forEach((el, i) => (el.style.padding = prevPaddings[i]));
@@ -68,8 +71,50 @@ export default function Game() {
 		return () => window.removeEventListener('message', handleMessage);
 	}, []);
 
+	useEffect(() => {
+		return () => {
+			if (skipTimerRef.current) {
+				clearTimeout(skipTimerRef.current)
+				skipTimerRef.current = null
+			}
+		}
+	}, [])
+
+	function startVideoWithAudio() {
+		const v = videoRef.current
+		if (!v) return
+		try {
+			v.currentTime = 0
+			v.muted = false
+			const playPromise = v.play()
+			if (playPromise && typeof playPromise.then === 'function') {
+				playPromise.catch(() => {
+					v.muted = true
+					v.play().catch((e) => console.log(e))
+				})
+			}
+		} finally {
+			setNeedsTapToStart(false)
+			skipTimerRef.current = setTimeout(() => setShowSkip(true), 3000)
+		}
+	}
+
+	function closeIntro() {
+		if (skipTimerRef.current) {
+			clearTimeout(skipTimerRef.current)
+			skipTimerRef.current = null
+		}
+		try {
+			videoRef.current?.pause()
+		} catch {}
+		setShowIntro(false)
+		setNeedsTapToStart(true)
+		setShowSkip(false)
+		setTimeout(() => iframeRef.current?.focus(), 0)
+	}
+
 	return (
-		<div className="w-screen h-screen relative">
+		<div className="w-screen h-screen relative overflow-hidden">
 			<iframe
 				ref={iframeRef}
 				title="Retro game"
@@ -78,33 +123,39 @@ export default function Game() {
 				sandbox="allow-scripts allow-same-origin"
 			/>
 			{showIntro && (
-				<div
-					className="absolute inset-0 z-50 flex items-center justify-center bg-black/90"
-					onClick={() => {
-						setShowIntro(false);
-						setTimeout(() => iframeRef.current?.focus(), 0);
-					}}
-					role="button"
-					aria-label="Tap to skip intro"
-				>
+				<div className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 overflow-hidden">
 					<video
-						className="max-w-full max-h-full"
+						ref={videoRef}
+						className="absolute inset-0 h-full object-cover m-auto"
 						src="/game/assets/intro.webm"
-						autoPlay
-						muted
 						playsInline
-						onEnded={() => {
-							setShowIntro(false);
-							setTimeout(() => iframeRef.current?.focus(), 0);
-						}}
-						onError={() => {
-							setShowIntro(false);
-							setTimeout(() => iframeRef.current?.focus(), 0);
-						}}
+						muted={needsTapToStart}
+						autoPlay={false}
+						onEnded={closeIntro}
+						onError={closeIntro}
 					/>
-					<div className="absolute bottom-4 right-4 text-white/70 text-sm select-none text-center text-shadow-sm">
-						Tap to skip
-					</div>
+
+					{needsTapToStart && (
+						<button
+							onClick={startVideoWithAudio}
+							className="absolute inset-0 flex items-center justify-center text-white select-none"
+						>
+							<span className="px-5 py-3 bg-white/10 backdrop-blur rounded-lg border border-white/20 text-lg font-semibold shadow-lg">
+								Tap to start
+							</span>
+						</button>
+					)}
+
+					{!needsTapToStart && showSkip && (
+						<button
+							onClick={closeIntro}
+							className="absolute inset-0 text-white/80 text-sm select-none hover:text-white transition"
+						>
+							<span className="absolute top-12 left-0 right-0">
+								Tap Again To Skip Intro
+							</span>
+						</button>
+					)}
 				</div>
 			)}
 		</div>
