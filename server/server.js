@@ -29,4 +29,6 @@ fastify.setErrorHandler((error, request, reply) => {
 	reply.status(500).send({ error: 'An unexpected error occurred' });
 });
 
-fastify.listen({ port: 3001});
+await fastify.listen({ port: 3001 });
+
+process.on('SIGTERM', () => fastify.close());

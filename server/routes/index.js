@@ -13,6 +13,8 @@ export default async function (fastify, opts) {
 	fastify.decorate('authenticate', authenticate);
 	fastify.decorate('checkAdmin', checkAdmin);
 
+	fastify.get('/health', async () => ({ ok: true, uptime: process.uptime() }));
+
 	fastify.register(auth, { prefix: '/auth' });
 	fastify.register(public_, { prefix: '/public' });
 
