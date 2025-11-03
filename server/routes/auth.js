@@ -1,5 +1,4 @@
 import { randomBytes } from "crypto"
-import fetch from "node-fetch"
 import Users from "../models/Users.js"
 import Teams from "../models/Teams.js"
 
