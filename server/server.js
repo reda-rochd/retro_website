@@ -31,4 +31,7 @@ fastify.setErrorHandler((error, request, reply) => {
 
 await fastify.listen({ port: 3001 });
 
-process.on('SIGTERM', () => fastify.close());
+process.on('SIGTERM', async () => {
+	await fastify.close();
+	await mongoose.connection.close();
+});

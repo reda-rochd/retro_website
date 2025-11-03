@@ -8,6 +8,7 @@ WorkingDirectory=/srv/1337play/server
 ExecStart=/usr/bin/node /srv/1337play/server/server.js
 Restart=always
 RestartSec=5
+TimeoutStopSec=10
 User=deploy
 Group=deploy
 Environment=NODE_ENV=production
