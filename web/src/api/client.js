@@ -8,7 +8,8 @@ api.interceptors.response.use(
 	(response) => response,
 	(error) => {
 		const status = error.response?.status;
-		if (status === 401 && !isRedirecting && !window.location.pathname.startsWith('/auth')) {
+		const skipAuthRedirect = Boolean(error.config?.skipAuthRedirect);
+		if (status === 401 && !skipAuthRedirect && !isRedirecting && !window.location.pathname.startsWith('/auth')) {
 			isRedirecting = true;
 			window.location.href = '/auth?error=access_denied&redirect=' + encodeURIComponent(window.location.pathname + window.location.search);
 		}

@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
 	const [loading, setLoading] = useState(true);
 
 	const loadUser = useCallback(async () => {
-		const response = await api.get("/me");
+		const response = await api.get("/me", { skipAuthRedirect: true });
 		setUser(response.data);
 		return response.data;
 	}, []);
