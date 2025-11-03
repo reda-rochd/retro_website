@@ -14,7 +14,6 @@ import NotFound from './pages/NotFound'
 import Forbidden from './pages/Forbidden'
 
 import Auth from './pages/Auth/index.jsx'
-import AuthCallback from './pages/Auth/callback.jsx'
 import {AuthProvider} from './contexts/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 
@@ -51,7 +50,6 @@ function AppRoutes() {
 						<Route path="/profile" element={<PageWrapper><Profile /></PageWrapper>} />
 					</Route>
 					<Route path="/auth" element={<PageWrapper><Auth /></PageWrapper>} />
-					<Route path="/auth/callback" element={<PageWrapper><AuthCallback /></PageWrapper>} />
 					<Route path="/forbidden" element={<PageWrapper><Forbidden /></PageWrapper>} />
 					<Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
 				</Routes>
