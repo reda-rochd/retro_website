@@ -10,13 +10,11 @@ export default function Auth() {
 	const params = new URLSearchParams(location.search);
 	const error = params.get('error');
 	const redirect = encodeURIComponent(location.state?.from?.pathname || params.get('redirect') || '/');
-	// const error = 'access_denied'
 	const errorMessages = {
 		access_denied: 'Access denied. Please try again.',
 		no_code: 'No code provided. Please try again.',
 		oauth_failed: 'OAuth failed. Please try again.',
-		invalid_profile: 'Invalid profile data. Please try again.',
-		no_token: 'No token received. Please try again.'
+		invalid_state: 'Invalid OAuth state. Please try again.',
 	}
 
 	return (
