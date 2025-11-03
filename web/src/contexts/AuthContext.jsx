@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
 	const [loading, setLoading] = useState(true);
 
 	const loadUser = useCallback(async () => {
-		const response = await api.get("/me", { skipAuthRedirect: true });
+		const response = await api.get("/me");
 		setUser(response.data);
 		return response.data;
 	}, []);
@@ -35,6 +35,15 @@ export function AuthProvider({ children }) {
 			.catch(() => setUser(null))
 			.finally(() => setLoading(false));
 	}, [loadUser]);
+
+	useEffect(() => {
+		const handleUnauthorized = () => setUser(null);
+		window.addEventListener('auth:unauthorized', handleUnauthorized);
+
+		return () => {
+			window.removeEventListener('auth:unauthorized', handleUnauthorized);
+		};
+	}, []);
 
 	return (
 		<AuthContext.Provider value={{ user, setUser, loading, login, logout }}>
